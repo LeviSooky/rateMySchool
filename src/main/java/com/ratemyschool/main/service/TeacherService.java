@@ -30,9 +30,9 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
-    public List<Teacher> getTeachers(int pageNo, int pageSize, String sortBy) {
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        return teacherRepository.findAllByStatusEquals(RMSConstants.ACTIVE, paging)
+    public List<Teacher> getTeachers(Pageable pageable) {
+
+        return teacherRepository.findAllByStatusEquals(RMSConstants.ACTIVE, pageable)
                 //.map(teacher -> modelMapper.map(teacher, TeacherDTO.class))
                 .toList();
     }

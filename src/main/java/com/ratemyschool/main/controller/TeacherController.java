@@ -24,9 +24,12 @@ public class TeacherController {
     public ResponseEntity<List<Teacher>> getTeachers(
         @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
         @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
-        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort) {
+        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
 
-        List<Teacher> teacherList = teacherService.getTeachers(pageNo, pageSize, sort);
+        Sort.Direction direction = Sort.Direction.ASC.name().equals(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
+        List<Teacher> teacherList = teacherService.getTeachers(paging);
         return ResponseEntity.ok(teacherList);
     }
 
@@ -53,8 +56,10 @@ public class TeacherController {
     public ResponseEntity<List<Teacher>> getTeachersForSchoolBySchoolId(@PathVariable UUID schoolId,
                                                         @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
                                                         @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
-                                                        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort) {
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sort));
+                                                        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
+                                                                        @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
+        Sort.Direction direction = Sort.Direction.ASC.name().equalsIgnoreCase(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
         List<Teacher> teachers = teacherService.getTeachersBySchoolId(schoolId, paging);
         return ResponseEntity.ok(teachers);
     }

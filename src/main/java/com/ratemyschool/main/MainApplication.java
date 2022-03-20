@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @RequiredArgsConstructor
-@SpringBootApplication
+@SpringBootApplication(exclude = DataLoader.class)
 @EnableJpaAuditing
 public class MainApplication {
 
