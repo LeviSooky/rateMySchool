@@ -1,4 +1,4 @@
-package com.ratemyschool.main;
+package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.model.Teacher;
 import com.ratemyschool.main.service.TeacherService;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/teachers")
+@RequestMapping("/api/teachers")
 public class TeacherController {
 
     private final TeacherService teacherService;
@@ -30,11 +30,12 @@ public class TeacherController {
         return ResponseEntity.ok(teacherList);
     }
 
-    @PutMapping(path = "/add")
+    @PostMapping(path = "/add")
     public void addTeacher(@RequestBody Teacher teacher) {
         teacherService.addTeacher(teacher);
     }
 
+    //TODO to admin
     @DeleteMapping(path = "/delete/{teacherId}")
     public ResponseEntity<Boolean> deleteTeacher(@PathVariable UUID teacherId) {
         try {
