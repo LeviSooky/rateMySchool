@@ -1,10 +1,10 @@
 package com.ratemyschool.main;
 
-import com.ratemyschool.main.model.RMSResponse;
-import com.ratemyschool.main.model.RMSTeacher;
-import com.ratemyschool.main.repo.RMSTeacherRepository;
+import com.ratemyschool.main.model.Teacher;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collections;
 
-@SpringBootApplication
 @RequiredArgsConstructor
+@SpringBootApplication
 public class MainApplication {
 
     private final TeacherService teacherService;
@@ -26,6 +26,11 @@ public class MainApplication {
 
 
         SpringApplication.run(MainApplication.class, args);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Bean
@@ -45,7 +50,7 @@ public class MainApplication {
     }
     @PostConstruct
     public void addFirst() {
-        RMSTeacher teacher = new RMSTeacher();
+        Teacher teacher = new Teacher();
         teacher.setName("levi");
         teacherService.addTeacher(teacher);
     }

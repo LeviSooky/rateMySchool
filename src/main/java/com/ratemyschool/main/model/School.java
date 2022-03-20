@@ -11,12 +11,12 @@ import java.util.UUID;
 
 @Data
 @Entity
-public class RMSSchool {
+public class School {
     @Id
     private UUID id;
     @Column(nullable = false)
     private String name;
     @OneToMany
-    private List<RMSTeacher> teachers;
+    private List<Teacher> teachers;
 
 }
