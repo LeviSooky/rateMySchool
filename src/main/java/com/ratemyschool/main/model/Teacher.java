@@ -19,7 +19,7 @@ public class Teacher {
     private UUID id;
     @Column(nullable = false)
     private String name;
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
     @ManyToOne
     private School school;
@@ -28,4 +28,9 @@ public class Teacher {
     private LocalDateTime creationDate;
     @LastModifiedDate
     private LocalDateTime lastModified;
+
+    public void addReview(Review review) {
+        review.setTeacher(this);
+        reviews.add(review);
+    }
 }

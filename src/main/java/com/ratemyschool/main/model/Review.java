@@ -19,7 +19,7 @@ public class Review {
     private String content;
     private UUID deleteKey;
     private byte stars;
-    private String statusFlag;
+    private char statusFlag;
     @CreatedDate
     private LocalDateTime creationDate;
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.model.Teacher;
+import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class TeacherController {
 
     private final TeacherService teacherService;
+    private final SchoolService schoolService;
     @GetMapping(path = "/all")
     public ResponseEntity<List<Teacher>> getTeachers(
         @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
@@ -48,7 +50,7 @@ public class TeacherController {
         }
          catch (RuntimeException e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Teacher Not Found", e);
+                    HttpStatus.NOT_FOUND, "Teacher Not Found");
         }
     }
 
@@ -63,4 +65,16 @@ public class TeacherController {
         List<Teacher> teachers = teacherService.getTeachersBySchoolId(schoolId, paging);
         return ResponseEntity.ok(teachers);
     }
+
+    @PostMapping("/add/{schoolId}")
+    public ResponseEntity<String> addTeacher(@PathVariable UUID schoolId, @RequestBody Teacher teacher) {
+
+        try {
+            schoolService.addTeacherToSchool(schoolId, teacher);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "school does not exist");
+        }
+        return ResponseEntity.ok("success");
+    }
+
 }
