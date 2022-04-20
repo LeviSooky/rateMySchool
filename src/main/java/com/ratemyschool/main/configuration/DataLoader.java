@@ -19,14 +19,14 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Teacher teacher = new Teacher();
-        teacher.setName("levi");
-        teacherService.addTeacher(teacher);
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setAdmin(true);
-        user.setEmail("levike@kukac.com");
-        user.setPassword("fing");
-        userService.addUser(user);
+//        Teacher teacher = new Teacher();
+//        teacher.setName("levi");
+//        teacherService.addTeacher(teacher);
+//        User user = new User();
+//        user.setId(UUID.randomUUID());
+//        user.setAdmin(true);
+//        user.setEmail("levike@kukac.com");
+//        user.setPassword("fing");
+//        userService.addUser(user);
     }
 }
