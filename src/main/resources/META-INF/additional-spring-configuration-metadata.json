@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "deepl-api-secret-key",
+      "type": "java.lang.String",
+      "description": "Description for deepl-api-secret-key."
+  }
+] }
