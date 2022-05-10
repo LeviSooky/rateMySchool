@@ -4,7 +4,9 @@ import com.google.cloud.language.v1.AnalyzeSentimentResponse;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
+import com.ratemyschool.main.controller.ReviewController;
 import com.ratemyschool.main.enums.RMSConstants;
+import com.ratemyschool.main.model.AddReviewResponse;
 import com.ratemyschool.main.model.DeeplResponse;
 import com.ratemyschool.main.model.Review;
 import com.ratemyschool.main.model.Teacher;
@@ -25,8 +27,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static com.ratemyschool.main.enums.RMSConstants.ACTIVE;
-import static com.ratemyschool.main.enums.RMSConstants.PENDING;
+import static com.ratemyschool.main.enums.RMSConstants.*;
 
 @Service
 @RequiredArgsConstructor()
@@ -62,45 +63,53 @@ public class TeacherService {
         return teacherRepository.findAllBySchoolId(schoolId, pageable).toList();
     }
 
-    public boolean addReview(UUID teacherId, Review review) {
+    public AddReviewResponse addReview(UUID teacherId, Review review) {
 
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
         review.setId(UUID.randomUUID());
         ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
-        if(deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
-            String reviewStatus = deeplResponse.getBody().getFullReviewInEnglish();
-            try (LanguageServiceClient language = LanguageServiceClient.create()) {
-                Document doc = Document.newBuilder().setContent(reviewStatus).setType(Document.Type.PLAIN_TEXT).build();
-                AnalyzeSentimentResponse response = language.analyzeSentiment(doc);
-                Sentiment sentiment = response.getDocumentSentiment();
-                if (sentiment == null) {
-                    review.setStatusFlag(PENDING);
-                } else {
-                    review.setStars(calculateStars(sentiment.getScore())); //TODO
-                }
-
-                if (review.getStars() == -1) {
-                    return false;
-                } else {
-                    review.setStatusFlag(review.getStars() > 0 ? ACTIVE : PENDING);
-                    teacher.addReview(review);
-                    teacherRepository.save(teacher);
-                }
-            } catch (IOException e) {
-                review.setStatusFlag(PENDING);
-                teacher.addReview(review);
-                teacherRepository.save(teacher);
-            }
-        } else {
+        if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
             review.setStatusFlag(PENDING);
             teacher.addReview(review);
             teacherRepository.save(teacher);
+            return AddReviewResponse.builder().status(TRANSLATION_FAILED).build();
         }
+        String reviewStatus = deeplResponse.getBody().getFullReviewInEnglish();
+        review.setContentInEnglish(reviewStatus);
+        float score = calculateSentimentScore(reviewStatus);
+        review.setSentimentScore(score);
+        if (score == Float.MIN_VALUE) {
+            review.setStatusFlag(PENDING);
+            teacher.addReview(review);
+            teacherRepository.save(teacher);
+            return AddReviewResponse.builder().status(SENTIMENT_FAILED).build();
+        }
+        byte stars = calculateStars(score);
+        if (stars == -1) {
+            return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
+        }
+        review.setStars(stars);
+        review.setStatusFlag(stars > 0 ? ACTIVE : PENDING);
+        teacher.addReview(review);
+        teacherRepository.save(teacher);
+        return stars > 0 ?
+                AddReviewResponse.builder().stars(stars).status(ACTIVE).build() :
+                AddReviewResponse.builder().status(PENDING).build();
 
-        return true;
     }
 
-    private ResponseEntity<DeeplResponse> getDeeplApiCallResponse(Review review) {
+    float calculateSentimentScore(String reviewInEnglish) {
+        try (LanguageServiceClient language = LanguageServiceClient.create()) {
+            Document doc = Document.newBuilder().setContent(reviewInEnglish).setType(Document.Type.PLAIN_TEXT).build();
+            AnalyzeSentimentResponse response = language.analyzeSentiment(doc);
+            Sentiment sentiment = response.getDocumentSentiment();
+            return sentiment.getScore();
+        } catch (IOException e) {
+            return Float.MIN_VALUE;
+        }
+    }
+
+    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(Review review) {
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(DEEPL_URL)
                 .queryParam("auth_key", API_KEY)
                 .toUriString();
@@ -116,7 +125,7 @@ public class TeacherService {
         return deeplResponse;
     }
 
-    private byte calculateStars(float score) {
+    byte calculateStars(float score) {
         if(score < -0.8) {
             return -1;
         }

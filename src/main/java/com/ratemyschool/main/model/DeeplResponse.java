@@ -10,7 +10,7 @@ public class DeeplResponse {
     private Translation[] translations;
 
     public String getFullReviewInEnglish() {
-        return StringUtils.join(Arrays.stream(translations).map(Translation::getText).toArray(), " ");
+        return translations == null ? "" : StringUtils.join(Arrays.stream(translations).map(Translation::getText).toArray(), " ");
     }
 }
 

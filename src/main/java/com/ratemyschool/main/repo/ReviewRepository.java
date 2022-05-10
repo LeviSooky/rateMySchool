@@ -14,5 +14,6 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
     Page<Review> findAllByTeacherId(UUID teacher_id, Pageable pageable);
     List<Review> findAllByStatusFlagOrderByCreationDate(char status);
+    List<Review> findAllByStatusFlagIn(List<Character> statuses);
 
 }

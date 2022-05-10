@@ -17,6 +17,8 @@ public class Review {
     private UUID id;
     @Column(nullable = false)
     private String content;
+    private String contentInEnglish;
+    private float sentimentScore;
     private UUID deleteKey;
     private byte stars;
     private char statusFlag;

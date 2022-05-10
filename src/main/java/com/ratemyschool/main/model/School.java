@@ -23,7 +23,7 @@ public class School {
     @Column(name = "creation_date")
     private DateTime creationDate;
     private char status;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Teacher> teachers;
 
     public void addTeacher(Teacher teacher) {

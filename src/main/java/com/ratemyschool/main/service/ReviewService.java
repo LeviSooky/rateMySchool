@@ -5,6 +5,7 @@ import com.ratemyschool.main.model.Review;
 import com.ratemyschool.main.repo.ReviewRepository;
 import edu.stanford.nlp.pipeline.*;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.mapping.Collection;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,5 +40,13 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         review.setStatusFlag(isOk ? RMSConstants.ACTIVE : RMSConstants.DELETED);
         reviewRepository.save(review);
+    }
+
+    public List<Review> getFailedReviews() {
+        return reviewRepository.findAllByStatusFlagIn(List.of(RMSConstants.SENTIMENT_FAILED, RMSConstants.TRANSLATION_FAILED));
+    }
+
+    void saveAll(List<Review> result) {
+        reviewRepository.saveAll(result);
     }
 }
