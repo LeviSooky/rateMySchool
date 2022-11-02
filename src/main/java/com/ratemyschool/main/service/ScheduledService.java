@@ -3,7 +3,6 @@ package com.ratemyschool.main.service;
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.DeeplResponse;
 import com.ratemyschool.main.model.Review;
-import com.ratemyschool.main.repo.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +54,15 @@ public class ScheduledService {
             review.setSentimentScore(score);
             review.setStatusFlag(stars > 0 ? ACTIVE : PENDING);
         }
+    }
+
+    @Scheduled
+    @Async
+    public void deleteDeletedReviews() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime fromDate = currentTime.minusDays(7);
+        reviewService.deleteDeletedComments(currentTime, fromDate);
+
     }
 
 }

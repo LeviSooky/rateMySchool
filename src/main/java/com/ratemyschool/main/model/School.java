@@ -1,6 +1,8 @@
 package com.ratemyschool.main.model;
 
 import lombok.Data;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.joda.time.DateTime;
 
 import javax.persistence.CascadeType;
@@ -13,6 +15,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class School {
     @Id
     private UUID id;

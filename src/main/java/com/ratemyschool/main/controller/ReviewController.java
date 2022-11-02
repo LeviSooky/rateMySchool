@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -29,7 +27,6 @@ public class ReviewController {
     @PutMapping("/add")
     public ResponseEntity<AddReviewResponse> addReview(@RequestParam UUID teacherId, @RequestParam String review) {
         Review newReview = new Review();
-        newReview.setCreationDate(LocalDateTime.now());
         newReview.setContent(review);
         AddReviewResponse result;
         try {

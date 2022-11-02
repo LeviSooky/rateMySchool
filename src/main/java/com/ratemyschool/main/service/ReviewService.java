@@ -3,13 +3,11 @@ package com.ratemyschool.main.service;
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.Review;
 import com.ratemyschool.main.repo.ReviewRepository;
-import edu.stanford.nlp.pipeline.*;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.mapping.Collection;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 @Service
@@ -48,5 +46,9 @@ public class ReviewService {
 
     void saveAll(List<Review> result) {
         reviewRepository.saveAll(result);
+    }
+
+    void deleteDeletedComments(LocalDateTime current, LocalDateTime from) {
+        reviewRepository.deleteAllByLastModifiedBetweenAndStatusFlag(current, from, RMSConstants.DELETED);
     }
 }

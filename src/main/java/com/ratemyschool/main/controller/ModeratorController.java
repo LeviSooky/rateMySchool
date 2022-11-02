@@ -1,6 +1,7 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.model.Review;
+import com.ratemyschool.main.model.Teacher;
 import com.ratemyschool.main.service.ReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,7 +31,7 @@ public class ModeratorController {
     }
 
     @GetMapping("/reviews/moderate/{reviewId}")
-    public ResponseEntity<String> activateReview(@PathVariable UUID reviewId, @RequestParam Boolean shouldActivate) {
+    public ResponseEntity<Void> activate(@PathVariable UUID reviewId, @RequestParam Boolean shouldActivate) {
         try {
             reviewService.activateReviewById(reviewId, shouldActivate);
         } catch (RuntimeException e) {
@@ -36,16 +39,27 @@ public class ModeratorController {
                     HttpStatus.NOT_FOUND, "review not found"
             );
         }
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+    @PostMapping("teachers/update")
+    public ResponseEntity<Teacher> updateTeacher(@RequestBody Teacher teacher) {
+       if(teacherService.doesTeacherExists(teacher.getId())) {
+           return ResponseEntity.ok(teacherService.update(teacher));
+       }
+        throw  new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "teacher not found"
+        );
     }
 
     @GetMapping("/teachers/moderate/{teacherId}")
-    public ResponseEntity<String> moderateTeacher(@PathVariable UUID teacherId, @RequestParam Boolean shouldActivate) {
+    public ResponseEntity<Void> moderateTeacher(@PathVariable UUID teacherId, @RequestParam Boolean shouldActivate) {
         try {
             teacherService.activateTeacherById(teacherId, shouldActivate);
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "teacher not found");
         }
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+
 }

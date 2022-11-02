@@ -167,4 +167,11 @@ public class TeacherService {
 
     }
 
+    public boolean doesTeacherExists(UUID teacherId) {
+        return teacherRepository.existsByIdAndStatus(teacherId, ACTIVE);
+    }
+
+    public Teacher update(Teacher teacher) {
+        return teacherRepository.saveAndFlush(teacher); // TODO
+    }
 }

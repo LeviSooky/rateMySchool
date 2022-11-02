@@ -9,5 +9,4 @@ public class RMSConstants {
     public static final char TRANSLATION_FAILED = 'N';
 
 
-    public static final String SUCCESS = "success";
 }
