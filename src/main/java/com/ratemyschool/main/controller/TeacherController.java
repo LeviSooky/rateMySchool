@@ -1,6 +1,6 @@
 package com.ratemyschool.main.controller;
 
-import com.ratemyschool.main.model.Teacher;
+import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class TeacherController {
     private final TeacherService teacherService;
     private final SchoolService schoolService;
     @GetMapping(path = "/all")
-    public ResponseEntity<List<Teacher>> getTeachers(
+    public ResponseEntity<List<TeacherData>> getTeachers(
         @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
         @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
         @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
@@ -31,12 +31,12 @@ public class TeacherController {
 
         Sort.Direction direction = Sort.Direction.ASC.name().equals(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
-        List<Teacher> teacherList = teacherService.getTeachers(paging);
+        List<TeacherData> teacherList = teacherService.getTeachers(paging);
         return ResponseEntity.ok(teacherList);
     }
 
     @PostMapping(path = "/add")
-    public void addTeacher(@RequestBody Teacher teacher) {
+    public void addTeacher(@RequestBody TeacherData teacher) {
         teacherService.addTeacher(teacher);
     }
 
@@ -44,7 +44,7 @@ public class TeacherController {
     @DeleteMapping(path = "/delete/{teacherId}")
     public ResponseEntity<Boolean> deleteTeacher(@PathVariable UUID teacherId) {
         try {
-            Teacher teacher = teacherService.getTeacherById(teacherId);
+            TeacherData teacher = teacherService.getTeacherById(teacherId);
             teacherService.deleteTeacher(teacher);
             return ResponseEntity.ok(Boolean.TRUE);
         }
@@ -55,19 +55,19 @@ public class TeacherController {
     }
 
     @GetMapping(path = "/bySchool/{schoolId}")
-    public ResponseEntity<List<Teacher>> getTeachersForSchoolBySchoolId(@PathVariable UUID schoolId,
-                                                        @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
-                                                        @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
-                                                        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
-                                                                        @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
+    public ResponseEntity<List<TeacherData>> getTeachersForSchoolBySchoolId(@PathVariable UUID schoolId,
+                                                                            @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
+                                                                            @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
+                                                                            @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
+                                                                            @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
         Sort.Direction direction = Sort.Direction.ASC.name().equalsIgnoreCase(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
-        List<Teacher> teachers = teacherService.getTeachersBySchoolId(schoolId, paging);
+        List<TeacherData> teachers = teacherService.getTeachersBySchoolId(schoolId, paging);
         return ResponseEntity.ok(teachers);
     }
 
     @PostMapping("/add/{schoolId}")
-    public ResponseEntity<String> addTeacher(@PathVariable UUID schoolId, @RequestBody Teacher teacher) {
+    public ResponseEntity<String> addTeacher(@PathVariable UUID schoolId, @RequestBody TeacherData teacher) {
 
         try {
             schoolService.addTeacherToSchool(schoolId, teacher);

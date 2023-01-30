@@ -2,7 +2,7 @@ package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.Review;
+import com.ratemyschool.main.model.ReviewData;
 import com.ratemyschool.main.service.ReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class ReviewController {
 
     @PutMapping("/add")
     public ResponseEntity<AddReviewResponse> addReview(@RequestParam UUID teacherId, @RequestParam String review) {
-        Review newReview = new Review();
+        ReviewData newReview = new ReviewData();
         newReview.setContent(review);
         AddReviewResponse result;
         try {

@@ -1,7 +1,7 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.dto.LoginDTO;
-import com.ratemyschool.main.model.User;
+import com.ratemyschool.main.model.UserData;
 import com.ratemyschool.main.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +33,7 @@ public class UserController {
         } catch (AuthenticationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization failed.");
         }
-        User user = (User) authenticate.getPrincipal();
+        UserData user = (UserData) authenticate.getPrincipal();
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user)).build();
     }
 }

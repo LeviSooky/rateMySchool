@@ -4,12 +4,11 @@ import com.google.cloud.language.v1.AnalyzeSentimentResponse;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
-import com.ratemyschool.main.controller.ReviewController;
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.AddReviewResponse;
 import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.Review;
-import com.ratemyschool.main.model.Teacher;
+import com.ratemyschool.main.model.ReviewData;
+import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.repo.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,33 +38,33 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     // private final ModelMapper modelMapper; //TODO move the bean
 
-    public void addTeacher(Teacher teacher) {
+    public void addTeacher(TeacherData teacher) {
         teacher.setStatus(ACTIVE);
         teacher.setId(UUID.randomUUID());
         teacherRepository.save(teacher);
     }
-    public void deleteTeacher(Teacher teacher) {
+    public void deleteTeacher(TeacherData teacher) {
         teacher.setStatus(RMSConstants.DELETED);
         teacherRepository.save(teacher);
     }
 
-    public List<Teacher> getTeachers(Pageable pageable) {
+    public List<TeacherData> getTeachers(Pageable pageable) {
 
         return teacherRepository.findAllByStatusEquals(ACTIVE, pageable)
                 //.map(teacher -> modelMapper.map(teacher, TeacherDTO.class))
                 .toList();
     }
-    public Teacher getTeacherById(UUID id) {
+    public TeacherData getTeacherById(UUID id) {
         return teacherRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    public List<Teacher> getTeachersBySchoolId(UUID schoolId, Pageable pageable) {
+    public List<TeacherData> getTeachersBySchoolId(UUID schoolId, Pageable pageable) {
         return teacherRepository.findAllBySchoolId(schoolId, pageable).toList();
     }
 
-    public AddReviewResponse addReview(UUID teacherId, Review review) {
+    public AddReviewResponse addReview(UUID teacherId, ReviewData review) {
 
-        Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
+        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
         review.setId(UUID.randomUUID());
         ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
@@ -109,7 +108,7 @@ public class TeacherService {
         }
     }
 
-    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(Review review) {
+    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(ReviewData review) {
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(DEEPL_URL)
                 .queryParam("auth_key", API_KEY)
                 .toUriString();
@@ -161,7 +160,7 @@ public class TeacherService {
     }
 
     public void activateTeacherById(UUID teacherId, Boolean shouldActivate) {
-        Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
+        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
         teacher.setStatus(shouldActivate ? ACTIVE : RMSConstants.DELETED);
         teacherRepository.save(teacher);
 
@@ -171,7 +170,7 @@ public class TeacherService {
         return teacherRepository.existsByIdAndStatus(teacherId, ACTIVE);
     }
 
-    public Teacher update(Teacher teacher) {
+    public TeacherData update(TeacherData teacher) {
         return teacherRepository.saveAndFlush(teacher); // TODO
     }
 }

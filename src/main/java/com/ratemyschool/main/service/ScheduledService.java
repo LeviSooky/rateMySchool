@@ -2,7 +2,7 @@ package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.Review;
+import com.ratemyschool.main.model.ReviewData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,12 @@ public class ScheduledService {
     @Async
     @Scheduled(fixedDelay = 604_800_000)
     public void reRunFailedSentiments() throws InterruptedException { //TODO check (async + ) + other methods
-        List<Review> failedReviews = reviewService.getFailedReviews();
-        List<Review> result = failedReviews.stream().peek(this::performOperations).collect(Collectors.toList());
+        List<ReviewData> failedReviews = reviewService.getFailedReviews();
+        List<ReviewData> result = failedReviews.stream().peek(this::performOperations).collect(Collectors.toList());
         reviewService.saveAll(result);
     }
 
-    public void performOperations(Review review) {
+    public void performOperations(ReviewData review) {
         if(review.getStatusFlag() == RMSConstants.TRANSLATION_FAILED) {
             ResponseEntity<DeeplResponse> deeplApiCallResponse = teacherService.getDeeplApiCallResponse(review);
             if(!deeplApiCallResponse.getStatusCode().equals(HttpStatus.OK)) {

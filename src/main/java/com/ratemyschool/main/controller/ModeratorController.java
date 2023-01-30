@@ -1,7 +1,7 @@
 package com.ratemyschool.main.controller;
 
-import com.ratemyschool.main.model.Review;
-import com.ratemyschool.main.model.Teacher;
+import com.ratemyschool.main.model.ReviewData;
+import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.service.ReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class ModeratorController {
     private final TeacherService teacherService;
 
     @GetMapping("/reviews/pending")
-    public ResponseEntity<List<Review>> getPendingReviews() {
-        List<Review> reviews = reviewService.getPendingReviews();
+    public ResponseEntity<List<ReviewData>> getPendingReviews() {
+        List<ReviewData> reviews = reviewService.getPendingReviews();
         return ResponseEntity.ok(reviews);
     }
 
@@ -42,7 +42,7 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
     @PostMapping("teachers/update")
-    public ResponseEntity<Teacher> updateTeacher(@RequestBody Teacher teacher) {
+    public ResponseEntity<TeacherData> updateTeacher(@RequestBody TeacherData teacher) {
        if(teacherService.doesTeacherExists(teacher.getId())) {
            return ResponseEntity.ok(teacherService.update(teacher));
        }

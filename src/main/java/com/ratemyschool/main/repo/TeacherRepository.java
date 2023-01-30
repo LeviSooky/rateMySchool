@@ -1,22 +1,18 @@
 package com.ratemyschool.main.repo;
 
-import com.ratemyschool.main.model.Teacher;
-import com.ratemyschool.main.model.TeacherListItem;
+import com.ratemyschool.main.model.TeacherData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Repository
-public interface TeacherRepository extends JpaRepository<Teacher, UUID> {
-    Page<Teacher> findAllByStatusEquals(char status, Pageable pageable);
-    Page<Teacher> findAllBySchoolId(UUID schoolId, Pageable pageable);
-    Optional<Teacher> findByNameLikeAndSchoolNameLike(String name, String schoolName);
+public interface TeacherRepository extends JpaRepository<TeacherData, UUID> {
+    Page<TeacherData> findAllByStatusEquals(char status, Pageable pageable);
+    Page<TeacherData> findAllBySchoolId(UUID schoolId, Pageable pageable);
+    Optional<TeacherData> findByNameLikeAndSchoolNameLike(String name, String schoolName);
     boolean existsByIdAndStatus(UUID teacherId, char status);
 //    @Query("SELECT t.id, t.name, AVG(r.stars), COUNT(r.id), s.name\n" +
 //            "FROM teacher t\n" +

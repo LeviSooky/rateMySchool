@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "app_user")
 @Getter
 @Setter
-public class User implements UserDetails {
+public class UserData implements UserDetails {
     @Id
     private UUID id;
     @Column(name = "email", unique = true)

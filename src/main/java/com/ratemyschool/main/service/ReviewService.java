@@ -1,7 +1,7 @@
 package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.enums.RMSConstants;
-import com.ratemyschool.main.model.Review;
+import com.ratemyschool.main.model.ReviewData;
 import com.ratemyschool.main.repo.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
 
-    public void addReview(Review review) {
+    public void addReview(ReviewData review) {
 //        TokenizerAnnotator tokenizerAnnotator = new TokenizerAnnotator("hu");
 //        Properties props = new Properties();
 //        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
@@ -30,21 +30,21 @@ public class ReviewService {
         //SentimentAnnotator sentimentAnnotator = new SentimentAnnotator(tokenizerAnnotator.toString(),null);
     }
 
-    public List<Review> getPendingReviews() {
+    public List<ReviewData> getPendingReviews() {
         return reviewRepository.findAllByStatusFlagOrderByCreationDate(RMSConstants.PENDING);
     }
 
     public void activateReviewById(UUID reviewId, Boolean isOk) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
+        ReviewData review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         review.setStatusFlag(isOk ? RMSConstants.ACTIVE : RMSConstants.DELETED);
         reviewRepository.save(review);
     }
 
-    public List<Review> getFailedReviews() {
+    public List<ReviewData> getFailedReviews() {
         return reviewRepository.findAllByStatusFlagIn(List.of(RMSConstants.SENTIMENT_FAILED, RMSConstants.TRANSLATION_FAILED));
     }
 
-    void saveAll(List<Review> result) {
+    void saveAll(List<ReviewData> result) {
         reviewRepository.saveAll(result);
     }
 

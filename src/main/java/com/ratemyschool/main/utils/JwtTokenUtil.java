@@ -1,6 +1,6 @@
 package com.ratemyschool.main.utils;
 
-import com.ratemyschool.main.model.User;
+import com.ratemyschool.main.model.UserData;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +21,7 @@ public class JwtTokenUtil {
         return new Date(System.currentTimeMillis() + 1000L * 60 * minutes);
     }
 
-    public String generateAccessToken(final User user) {
+    public String generateAccessToken(final UserData user) {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .setIssuer(JWTIssuer)
