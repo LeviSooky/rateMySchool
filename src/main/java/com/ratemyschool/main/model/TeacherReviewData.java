@@ -1,5 +1,6 @@
 package com.ratemyschool.main.model;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -14,9 +15,10 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "teacher_review")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @EntityListeners(AuditingEntityListener.class)
-public class ReviewData {
+public class TeacherReviewData {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -30,7 +32,8 @@ public class ReviewData {
     private float sentimentScore;
     private UUID deleteKey;
     private byte stars;
-    private char statusFlag;
+    @Enumerated(EnumType.STRING)
+    private EntityStatus status;
     @CreatedDate
     private LocalDateTime creationDate;
     @LastModifiedDate

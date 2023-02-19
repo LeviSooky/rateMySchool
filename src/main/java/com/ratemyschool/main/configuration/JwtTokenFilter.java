@@ -1,8 +1,9 @@
 package com.ratemyschool.main.configuration;
 
-import com.ratemyschool.main.repo.UserRepository;
+import com.ratemyschool.main.repo.AppUserRepository;
 import com.ratemyschool.main.utils.JwtTokenUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,11 +24,12 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Component
-@AllArgsConstructor
+@Configuration
+@RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final UserRepository userRepository;
+    private final AppUserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

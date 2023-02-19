@@ -1,8 +1,9 @@
 package com.ratemyschool.main.service;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.ReviewData;
+import com.ratemyschool.main.model.TeacherReviewData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,39 +21,39 @@ import static com.ratemyschool.main.enums.RMSConstants.PENDING;
 @EnableAsync
 @RequiredArgsConstructor
 public class ScheduledService {
-    private final ReviewService reviewService;
+    private final TeacherReviewService reviewService;
     private final TeacherService teacherService;
     @Async
     @Scheduled(fixedDelay = 604_800_000)
     public void reRunFailedSentiments() throws InterruptedException { //TODO check (async + ) + other methods
-        List<ReviewData> failedReviews = reviewService.getFailedReviews();
-        List<ReviewData> result = failedReviews.stream().peek(this::performOperations).collect(Collectors.toList());
+        List<TeacherReviewData> failedReviews = reviewService.getFailedReviews();
+        List<TeacherReviewData> result = failedReviews.stream().peek(this::performOperations).collect(Collectors.toList());
         reviewService.saveAll(result);
     }
 
-    public void performOperations(ReviewData review) {
-        if(review.getStatusFlag() == RMSConstants.TRANSLATION_FAILED) {
+    public void performOperations(TeacherReviewData review) {
+        if(review.getStatus() == EntityStatus.TRANSLATION_FAILED) {
             ResponseEntity<DeeplResponse> deeplApiCallResponse = teacherService.getDeeplApiCallResponse(review);
             if(!deeplApiCallResponse.getStatusCode().equals(HttpStatus.OK)) {
                 return;
             }
             String fullReviewInEnglish = deeplApiCallResponse.getBody().getFullReviewInEnglish();
             review.setContentInEnglish(fullReviewInEnglish);
-            review.setStatusFlag(RMSConstants.SENTIMENT_FAILED);
+            review.setStatus(EntityStatus.SENTIMENT_FAILED);
         }
-        if(review.getStatusFlag() == RMSConstants.SENTIMENT_FAILED) {
+        if(review.getStatus() == EntityStatus.SENTIMENT_FAILED) {
             float score = teacherService.calculateSentimentScore(review.getContentInEnglish());
             if(score == Float.MIN_VALUE) {
                 return;
             }
             byte stars = teacherService.calculateStars(score);
             if(stars == -1) {
-                review.setStatusFlag(RMSConstants.DELETED);
+                review.setStatus(EntityStatus.DELETED);
                 return;
             }
             review.setStars(stars);
             review.setSentimentScore(score);
-            review.setStatusFlag(stars > 0 ? ACTIVE : PENDING);
+            review.setStatus(stars > 0 ? EntityStatus.ACTIVE : EntityStatus.PENDING);
         }
     }
 

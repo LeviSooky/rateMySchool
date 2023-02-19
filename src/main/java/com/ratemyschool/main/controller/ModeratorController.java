@@ -1,8 +1,8 @@
 package com.ratemyschool.main.controller;
 
-import com.ratemyschool.main.model.ReviewData;
+import com.ratemyschool.main.model.TeacherReviewData;
 import com.ratemyschool.main.model.TeacherData;
-import com.ratemyschool.main.service.ReviewService;
+import com.ratemyschool.main.service.TeacherReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,12 @@ import java.util.UUID;
 @RestController("/moderator")
 @RequiredArgsConstructor
 public class ModeratorController {
-    private final ReviewService reviewService;
+    private final TeacherReviewService reviewService;
     private final TeacherService teacherService;
 
     @GetMapping("/reviews/pending")
-    public ResponseEntity<List<ReviewData>> getPendingReviews() {
-        List<ReviewData> reviews = reviewService.getPendingReviews();
+    public ResponseEntity<List<TeacherReviewData>> getPendingReviews() {
+        List<TeacherReviewData> reviews = reviewService.getPendingReviews();
         return ResponseEntity.ok(reviews);
     }
 

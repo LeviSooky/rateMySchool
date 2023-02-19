@@ -1,9 +1,13 @@
 package com.ratemyschool.main.controller;
 
+import com.ratemyschool.main.dto.School;
+import com.ratemyschool.main.dto.Teacher;
+import com.ratemyschool.main.model.PageResult;
 import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 @RequestMapping("/api/teachers")
 public class TeacherController {
 
@@ -33,6 +38,16 @@ public class TeacherController {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
         List<TeacherData> teacherList = teacherService.getTeachers(paging);
         return ResponseEntity.ok(teacherList);
+    }
+
+    @GetMapping(path = "/search/{keyword}")
+    public ResponseEntity<List<Teacher>> findAllBy(@PathVariable String keyword, Pageable pageable) {
+        log.info("REST request for teacher search by {}", keyword);
+        var result = teacherService.findAllActiveBy(keyword, pageable);
+        ResponseEntity<List<Teacher>> response = ResponseEntity.ok(result.getContent());
+        response.getHeaders().set("totalPages", result.getTotalPages().toString());
+        response.getHeaders().set("totalElements", result.getTotalElements().toString());
+        return response;
     }
 
     @PostMapping(path = "/add")

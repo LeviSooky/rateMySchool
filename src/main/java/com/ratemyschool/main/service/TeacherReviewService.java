@@ -1,8 +1,9 @@
 package com.ratemyschool.main.service;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.enums.RMSConstants;
-import com.ratemyschool.main.model.ReviewData;
-import com.ratemyschool.main.repo.ReviewRepository;
+import com.ratemyschool.main.model.TeacherReviewData;
+import com.ratemyschool.main.repo.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewService {
-    private final ReviewRepository reviewRepository;
+public class TeacherReviewService {
+    private final TeacherReviewRepository reviewRepository;
 
-    public void addReview(ReviewData review) {
+    public void addReview(TeacherReviewData review) {
 //        TokenizerAnnotator tokenizerAnnotator = new TokenizerAnnotator("hu");
 //        Properties props = new Properties();
 //        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
@@ -30,21 +31,21 @@ public class ReviewService {
         //SentimentAnnotator sentimentAnnotator = new SentimentAnnotator(tokenizerAnnotator.toString(),null);
     }
 
-    public List<ReviewData> getPendingReviews() {
+    public List<TeacherReviewData> getPendingReviews() {
         return reviewRepository.findAllByStatusFlagOrderByCreationDate(RMSConstants.PENDING);
     }
 
     public void activateReviewById(UUID reviewId, Boolean isOk) {
-        ReviewData review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
-        review.setStatusFlag(isOk ? RMSConstants.ACTIVE : RMSConstants.DELETED);
+        TeacherReviewData review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
+        review.setStatus(isOk ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         reviewRepository.save(review);
     }
 
-    public List<ReviewData> getFailedReviews() {
+    public List<TeacherReviewData> getFailedReviews() {
         return reviewRepository.findAllByStatusFlagIn(List.of(RMSConstants.SENTIMENT_FAILED, RMSConstants.TRANSLATION_FAILED));
     }
 
-    void saveAll(List<ReviewData> result) {
+    void saveAll(List<TeacherReviewData> result) {
         reviewRepository.saveAll(result);
     }
 

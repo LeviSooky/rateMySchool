@@ -4,11 +4,9 @@ import com.google.cloud.language.v1.AnalyzeSentimentResponse;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
-import com.ratemyschool.main.enums.RMSConstants;
-import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.ReviewData;
-import com.ratemyschool.main.model.TeacherData;
+import com.ratemyschool.main.dto.Teacher;
+import com.ratemyschool.main.enums.EntityStatus;
+import com.ratemyschool.main.model.*;
 import com.ratemyschool.main.repo.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,22 +27,21 @@ import java.util.*;
 import static com.ratemyschool.main.enums.RMSConstants.*;
 
 @Service
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
 public class TeacherService {
 
     @Value("${deepl-api-secret-key}")
     private String API_KEY;
     private final String DEEPL_URL = "https://api-free.deepl.com/v2/translate";
     private final TeacherRepository teacherRepository;
-    // private final ModelMapper modelMapper; //TODO move the bean
 
     public void addTeacher(TeacherData teacher) {
-        teacher.setStatus(ACTIVE);
+        teacher.setStatus(EntityStatus.ACTIVE);
         teacher.setId(UUID.randomUUID());
         teacherRepository.save(teacher);
     }
     public void deleteTeacher(TeacherData teacher) {
-        teacher.setStatus(RMSConstants.DELETED);
+        teacher.setStatus(EntityStatus.DELETED);
         teacherRepository.save(teacher);
     }
 
@@ -62,13 +59,13 @@ public class TeacherService {
         return teacherRepository.findAllBySchoolId(schoolId, pageable).toList();
     }
 
-    public AddReviewResponse addReview(UUID teacherId, ReviewData review) {
+    public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
 
         TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
         review.setId(UUID.randomUUID());
         ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
-            review.setStatusFlag(PENDING);
+            review.setStatus(PENDING);
             teacher.addReview(review);
             teacherRepository.save(teacher);
             return AddReviewResponse.builder().status(TRANSLATION_FAILED).build();
@@ -78,7 +75,7 @@ public class TeacherService {
         float score = calculateSentimentScore(reviewStatus);
         review.setSentimentScore(score);
         if (score == Float.MIN_VALUE) {
-            review.setStatusFlag(PENDING);
+            review.setStatus(PENDING);
             teacher.addReview(review);
             teacherRepository.save(teacher);
             return AddReviewResponse.builder().status(SENTIMENT_FAILED).build();
@@ -88,7 +85,7 @@ public class TeacherService {
             return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
         }
         review.setStars(stars);
-        review.setStatusFlag(stars > 0 ? ACTIVE : PENDING);
+        review.setStatus(stars > 0 ? ACTIVE : PENDING);
         teacher.addReview(review);
         teacherRepository.save(teacher);
         return stars > 0 ?
@@ -108,7 +105,7 @@ public class TeacherService {
         }
     }
 
-    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(ReviewData review) {
+    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(TeacherReviewData review) {
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(DEEPL_URL)
                 .queryParam("auth_key", API_KEY)
                 .toUriString();
@@ -161,7 +158,7 @@ public class TeacherService {
 
     public void activateTeacherById(UUID teacherId, Boolean shouldActivate) {
         TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
-        teacher.setStatus(shouldActivate ? ACTIVE : RMSConstants.DELETED);
+        teacher.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         teacherRepository.save(teacher);
 
     }
@@ -172,5 +169,9 @@ public class TeacherService {
 
     public TeacherData update(TeacherData teacher) {
         return teacherRepository.saveAndFlush(teacher); // TODO
+    }
+
+    public PageResult<TeacherData, Teacher> findAllActiveBy(String keyword, Pageable pageable) {
+        return new PageResult<>(teacherRepository.findAllActiveBy(keyword, pageable));
     }
 }

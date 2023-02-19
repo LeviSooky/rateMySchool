@@ -1,6 +1,9 @@
 package com.ratemyschool.main.model;
 
-import lombok.Data;
+import com.ratemyschool.main.dto.Teacher;
+import com.ratemyschool.main.enums.EntityStatus;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
@@ -12,13 +15,18 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
+@Table(name = "teacher")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @EntityListeners(AuditingEntityListener.class)
-public class TeacherData {
+public class TeacherData implements DomainRepresented<Teacher> {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -28,18 +36,48 @@ public class TeacherData {
     private UUID id;
     @Column(nullable = false)
     private String name;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<ReviewData> reviews = new ArrayList<>();
-    @ManyToOne
-    private SchoolData schoolData;
-    private char status;
+    @OneToMany(
+            orphanRemoval = true,
+            cascade = CascadeType.ALL,
+            mappedBy = "id", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<TeacherReviewData> reviews = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ToString.Exclude
+    private SchoolData school;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private EntityStatus status; //TODO do everywhere and maybe add sex for ui generic logo
     @CreatedDate
     private LocalDateTime creationDate;
     @LastModifiedDate
     private LocalDateTime lastModified;
 
-    public void addReview(ReviewData review) {
+    public void addReview(TeacherReviewData review) {
         review.setTeacher(this);
         reviews.add(review);
+    }
+
+    @Override
+    public Teacher toDomainModel() {
+        return Teacher.builder()
+                .id(id)
+                .name(name)
+                .school(school.toDomainModel())
+                .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        TeacherData that = (TeacherData) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode(); //TODO maybe change
     }
 }

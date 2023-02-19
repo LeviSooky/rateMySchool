@@ -2,8 +2,8 @@ package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.ReviewData;
-import com.ratemyschool.main.service.ReviewService;
+import com.ratemyschool.main.model.TeacherReviewData;
+import com.ratemyschool.main.service.TeacherReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,12 @@ import java.util.UUID;
 @RequestMapping("/api/review")
 public class ReviewController {
 
-    private final ReviewService reviewService;
+    private final TeacherReviewService reviewService;
     private final TeacherService teacherService;
 
     @PutMapping("/add")
     public ResponseEntity<AddReviewResponse> addReview(@RequestParam UUID teacherId, @RequestParam String review) {
-        ReviewData newReview = new ReviewData();
+        TeacherReviewData newReview = new TeacherReviewData();
         newReview.setContent(review);
         AddReviewResponse result;
         try {

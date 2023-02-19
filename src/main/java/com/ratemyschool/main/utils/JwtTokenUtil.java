@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ public class JwtTokenUtil {
                 .setSubject(user.getId().toString())
                 .setIssuer(JWTIssuer)
                 .setIssuedAt(new Date())
-                .setExpiration(createExpirationDate(69))
+                .setExpiration(createExpirationDate(145))
                 .signWith(SignatureAlgorithm.HS512, JWTSecret)
                 .compact();
     }
