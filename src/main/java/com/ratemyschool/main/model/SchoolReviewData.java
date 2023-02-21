@@ -1,5 +1,6 @@
 package com.ratemyschool.main.model;
 
+import com.ratemyschool.main.dto.SchoolReview;
 import com.ratemyschool.main.enums.EntityStatus;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
@@ -12,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -23,7 +25,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "school_review")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class SchoolReviewData {
+public class SchoolReviewData implements DomainRepresented<SchoolReview> {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -32,8 +34,9 @@ public class SchoolReviewData {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String content;
+    @Column(length = 2000)
     private String contentInEnglish;
     private float sentimentScore;
     private UUID deleteKey;
@@ -44,6 +47,18 @@ public class SchoolReviewData {
     private LocalDateTime creationDate;
     @LastModifiedDate
     private LocalDateTime lastModified;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private SchoolData school;
+
+
+    @Override
+    public SchoolReview toDomainModel() {
+        return SchoolReview.builder()
+                .id(id)
+                .content(content)
+                .stars(stars)
+                .creationDate(creationDate)
+                .status(status)
+                .build();
+    }
 }

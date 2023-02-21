@@ -1,5 +1,6 @@
 package com.ratemyschool.main.repo;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.model.TeacherReviewData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,8 @@ import java.util.UUID;
 public interface TeacherReviewRepository extends JpaRepository<TeacherReviewData, UUID> {
 
     Page<TeacherReviewData> findAllByTeacherId(UUID teacher_id, Pageable pageable);
-    List<TeacherReviewData> findAllByStatusFlagOrderByCreationDate(char status);
-    List<TeacherReviewData> findAllByStatusFlagIn(List<Character> statuses);
-    void deleteAllByLastModifiedBetweenAndStatusFlag(LocalDateTime currentTime, LocalDateTime fromDate, char status);
+    List<TeacherReviewData> findAllByStatusOrderByCreationDate(EntityStatus status);
+    List<TeacherReviewData> findAllByStatusIn(List<EntityStatus> statuses);
+    void deleteAllByLastModifiedBetweenAndStatus(LocalDateTime currentTime, LocalDateTime fromDate, EntityStatus status);
 
 }

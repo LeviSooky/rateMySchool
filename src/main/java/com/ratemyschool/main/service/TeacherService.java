@@ -65,7 +65,7 @@ public class TeacherService {
         review.setId(UUID.randomUUID());
         ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
-            review.setStatus(PENDING);
+            review.setStatus(EntityStatus.PENDING);
             teacher.addReview(review);
             teacherRepository.save(teacher);
             return AddReviewResponse.builder().status(TRANSLATION_FAILED).build();
@@ -75,7 +75,7 @@ public class TeacherService {
         float score = calculateSentimentScore(reviewStatus);
         review.setSentimentScore(score);
         if (score == Float.MIN_VALUE) {
-            review.setStatus(PENDING);
+            review.setStatus(EntityStatus.PENDING);
             teacher.addReview(review);
             teacherRepository.save(teacher);
             return AddReviewResponse.builder().status(SENTIMENT_FAILED).build();
@@ -85,7 +85,7 @@ public class TeacherService {
             return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
         }
         review.setStars(stars);
-        review.setStatus(stars > 0 ? ACTIVE : PENDING);
+        review.setStatus(stars > 0 ? EntityStatus.ACTIVE : EntityStatus.PENDING);
         teacher.addReview(review);
         teacherRepository.save(teacher);
         return stars > 0 ?

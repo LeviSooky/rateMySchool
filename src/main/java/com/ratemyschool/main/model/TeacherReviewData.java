@@ -26,8 +26,9 @@ public class TeacherReviewData {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String content;
+    @Column(length = 2000)
     private String contentInEnglish;
     private float sentimentScore;
     private UUID deleteKey;

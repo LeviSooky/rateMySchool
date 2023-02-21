@@ -32,7 +32,7 @@ public class TeacherReviewService {
     }
 
     public List<TeacherReviewData> getPendingReviews() {
-        return reviewRepository.findAllByStatusFlagOrderByCreationDate(RMSConstants.PENDING);
+        return reviewRepository.findAllByStatusOrderByCreationDate(EntityStatus.PENDING);
     }
 
     public void activateReviewById(UUID reviewId, Boolean isOk) {
@@ -42,7 +42,7 @@ public class TeacherReviewService {
     }
 
     public List<TeacherReviewData> getFailedReviews() {
-        return reviewRepository.findAllByStatusFlagIn(List.of(RMSConstants.SENTIMENT_FAILED, RMSConstants.TRANSLATION_FAILED));
+        return reviewRepository.findAllByStatusIn(List.of(EntityStatus.SENTIMENT_FAILED, EntityStatus.TRANSLATION_FAILED));
     }
 
     void saveAll(List<TeacherReviewData> result) {
@@ -50,6 +50,6 @@ public class TeacherReviewService {
     }
 
     void deleteDeletedComments(LocalDateTime current, LocalDateTime from) {
-        reviewRepository.deleteAllByLastModifiedBetweenAndStatusFlag(current, from, RMSConstants.DELETED);
+        reviewRepository.deleteAllByLastModifiedBetweenAndStatus(current, from, EntityStatus.DELETED);
     }
 }
