@@ -43,11 +43,20 @@ public class TeacherController {
     @GetMapping(path = "/search/{keyword}")
     public ResponseEntity<List<Teacher>> findAllBy(@PathVariable String keyword, Pageable pageable) {
         log.info("REST request for teacher search by {}", keyword);
-        var result = teacherService.findAllActiveBy(keyword, pageable);
-        ResponseEntity<List<Teacher>> response = ResponseEntity.ok(result.getContent());
-        response.getHeaders().set("totalPages", result.getTotalPages().toString());
-        response.getHeaders().set("totalElements", result.getTotalElements().toString());
-        return response;
+        return teacherService.findAllActiveBy(keyword, pageable).buildResponse();
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<Teacher>> findAllBy(Pageable pageable) {
+        log.info("REST request for teacher search");
+        return teacherService.findAllActive(pageable).buildResponse();
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Teacher> findBy(@PathVariable UUID id) {
+        log.info("REST request to get teacher by id: {}", id);
+        Teacher result = teacherService.findBy(id);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping(path = "/add")

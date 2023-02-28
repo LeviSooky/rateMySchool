@@ -11,7 +11,18 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +54,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
     @ToString.Exclude
     private List<TeacherReviewData> reviews = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @ToString.Exclude
     private SchoolData school;
     @Column(nullable = false)
@@ -53,6 +64,8 @@ public class TeacherData implements DomainRepresented<Teacher> {
     private LocalDateTime creationDate;
     @LastModifiedDate
     private LocalDateTime lastModified;
+
+    private Boolean isMale;
 
     public void addReview(TeacherReviewData review) {
         review.setTeacher(this);
@@ -64,6 +77,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
         return Teacher.builder()
                 .id(id)
                 .name(name)
+                .isMale(isMale)
                 .school(school.toDomainModel())
                 .build();
     }

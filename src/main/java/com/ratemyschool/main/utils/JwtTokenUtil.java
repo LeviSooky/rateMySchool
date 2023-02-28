@@ -27,6 +27,7 @@ public class JwtTokenUtil {
                 .setSubject(user.getId().toString())
                 .setIssuer(JWTIssuer)
                 .setIssuedAt(new Date())
+                .claim("role", user.getAuthorities().iterator().next())
                 .setExpiration(createExpirationDate(145))
                 .signWith(SignatureAlgorithm.HS512, JWTSecret)
                 .compact();

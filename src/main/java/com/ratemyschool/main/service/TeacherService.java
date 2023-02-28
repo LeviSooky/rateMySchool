@@ -62,7 +62,6 @@ public class TeacherService {
     public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
 
         TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
-        review.setId(UUID.randomUUID());
         ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
             review.setStatus(EntityStatus.PENDING);
@@ -173,5 +172,15 @@ public class TeacherService {
 
     public PageResult<TeacherData, Teacher> findAllActiveBy(String keyword, Pageable pageable) {
         return new PageResult<>(teacherRepository.findAllActiveBy(keyword, pageable));
+    }
+
+    public PageResult<TeacherData, Teacher> findAllActive(Pageable pageable) {
+        return new PageResult<>(teacherRepository.findAllActive(pageable));
+    }
+
+    public Teacher findBy(UUID id) {
+        return teacherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("teacher not found."))
+                .toDomainModel();
     }
 }

@@ -1,10 +1,12 @@
 package com.ratemyschool.main.service;
 
+import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
-import com.ratemyschool.main.enums.RMSConstants;
+import com.ratemyschool.main.model.PageResult;
 import com.ratemyschool.main.model.TeacherReviewData;
 import com.ratemyschool.main.repo.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,5 +53,9 @@ public class TeacherReviewService {
 
     void deleteDeletedComments(LocalDateTime current, LocalDateTime from) {
         reviewRepository.deleteAllByLastModifiedBetweenAndStatus(current, from, EntityStatus.DELETED);
+    }
+
+    public PageResult<TeacherReviewData, TeacherReview> findAllActiveBy(UUID teacherId, Pageable pageable) {
+        return new PageResult<>(reviewRepository.findAllActive(teacherId, pageable));
     }
 }

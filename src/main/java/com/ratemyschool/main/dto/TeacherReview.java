@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-@Data
 @AllArgsConstructor
-public class Teacher {
-
+@Data
+public class TeacherReview {
     private UUID id;
-    private String name;
-    private School school;
-    private Boolean isMale;
+    private String content;
+    private LocalDateTime creationDate;
+    private byte stars;
 }

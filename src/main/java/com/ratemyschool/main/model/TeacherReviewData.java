@@ -1,5 +1,6 @@
 package com.ratemyschool.main.model;
 
+import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Table(name = "teacher_review")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @EntityListeners(AuditingEntityListener.class)
-public class TeacherReviewData {
+public class TeacherReviewData implements DomainRepresented<TeacherReview> {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -42,4 +43,13 @@ public class TeacherReviewData {
     @ManyToOne
     private TeacherData teacher;
 
+    @Override
+    public TeacherReview toDomainModel() {
+        return TeacherReview.builder()
+                .id(id)
+                .content(content)
+                .creationDate(creationDate)
+                .stars(stars)
+                .build();
+    }
 }

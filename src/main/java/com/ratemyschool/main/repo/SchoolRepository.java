@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface SchoolRepository extends JpaRepository<SchoolData, UUID> {
 
-    @Query("select sd from SchoolData sd where lower(sd.name) like concat('%', :keyword, '%')\n" +
+    @Query("select sd from SchoolData sd where lower(sd.name) like lower(concat('%', :keyword, '%'))\n" +
             "and sd.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE")
     Page<SchoolData> findAllActiveBy(@Param("keyword") String keyword, Pageable pageable);
 

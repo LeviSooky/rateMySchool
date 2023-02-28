@@ -30,7 +30,10 @@ public interface TeacherRepository extends JpaRepository<TeacherData, UUID> {
 //            "ORDER BY :#{#pageable.sort} :sortDirection")
 //    List<TeacherListItem> getThem(@Param("teacherId") UUID teacherId, @Param("pageable") Pageable pageable);
     //TODO
-    @Query("select td from TeacherData td where lower(td.name) like lower(:keyword)")
+    @Query("select td from TeacherData td where td.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE and lower(td.name) like lower(concat('%', :keyword, '%'))")
     Page<TeacherData> findAllActiveBy(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("select td from TeacherData td where td.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE")
+    Page<TeacherData> findAllActive(Pageable pageable);
 }
 

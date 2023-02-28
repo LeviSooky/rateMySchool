@@ -1,19 +1,20 @@
 package com.ratemyschool.main.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.UUID;
 
-@Builder
+@Getter
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class School {
+public class SchoolCreateModel {
     private UUID id;
     @NotBlank
     private String name;
@@ -22,4 +23,9 @@ public class School {
 
     private Float avgRating;
 
+    private MultipartFile image;
+
+
+
 }
+

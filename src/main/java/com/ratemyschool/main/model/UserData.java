@@ -3,6 +3,7 @@ package com.ratemyschool.main.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Table(name = "app_user")
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class UserData implements UserDetails {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -33,7 +35,7 @@ public class UserData implements UserDetails {
 
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() { //TODO encode roles to the jwt token
         return isAdmin ? Collections.singletonList(new SimpleGrantedAuthority("ADMIN")) :
                 Collections.singletonList(new SimpleGrantedAuthority("MODERATOR")) ;
     }

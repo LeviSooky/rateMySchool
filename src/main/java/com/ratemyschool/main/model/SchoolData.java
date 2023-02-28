@@ -1,29 +1,25 @@
 package com.ratemyschool.main.model;
 
+import com.google.common.io.BaseEncoding;
 import com.ratemyschool.main.dto.School;
 import com.ratemyschool.main.enums.EntityStatus;
-import lombok.*;
+import com.ratemyschool.main.util.ImageUtil;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import javax.persistence.*;
+import java.util.*;
 
 @Getter
 @Setter
@@ -32,6 +28,7 @@ import java.util.UUID;
 @Table(name = "school")
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class SchoolData implements DomainRepresented<School> {
     @Id
@@ -51,6 +48,7 @@ public class SchoolData implements DomainRepresented<School> {
 
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
+
     @OneToMany(
             orphanRemoval = true,
             cascade = CascadeType.ALL,
@@ -66,6 +64,7 @@ public class SchoolData implements DomainRepresented<School> {
     @ToString.Exclude
     private List<SchoolReviewData> reviews = new ArrayList<>();
 
+    private Float avgRating;
 
     public void addTeacher(TeacherData teacher) {
         teacher.setSchool(this);
@@ -76,6 +75,7 @@ public class SchoolData implements DomainRepresented<School> {
         return School.builder()
                 .id(this.id)
                 .name(this.name)
+                .avgRating(avgRating)
                 .websiteUrl(this.websiteUrl)
                 .build();
     }
