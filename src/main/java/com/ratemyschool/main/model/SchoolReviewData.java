@@ -45,6 +45,7 @@ public class SchoolReviewData implements DomainRepresented<SchoolReview> {
     private UUID deleteKey;
     private byte stars;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EntityStatus status;
     @CreatedDate
     private LocalDateTime creationDate;

@@ -1,8 +1,10 @@
 package com.ratemyschool.main.repo;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.model.SchoolReviewData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +19,7 @@ public interface SchoolReviewRepository extends JpaRepository<SchoolReviewData, 
             "and s.id = :id\n"
     )
     Page<SchoolReviewData> findAllActiveBy(@Param("id") UUID id, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"school"})
+    Long countAllBySchoolIdAndStatus(UUID schoolId, EntityStatus status);
 }

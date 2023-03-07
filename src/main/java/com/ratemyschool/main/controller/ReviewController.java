@@ -3,28 +3,23 @@ package com.ratemyschool.main.controller;
 import com.ratemyschool.main.enums.RMSConstants;
 import com.ratemyschool.main.model.AddReviewResponse;
 import com.ratemyschool.main.model.TeacherReviewData;
-import com.ratemyschool.main.service.TeacherReviewService;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/review")
-public class ReviewController {
+@RequestMapping("/api/review/teacher")
+public class ReviewController { //TODO rename me
 
-    private final TeacherReviewService reviewService;
     private final TeacherService teacherService;
 
-    @PutMapping("/add")
+    @GetMapping
     public ResponseEntity<AddReviewResponse> addReview(@RequestParam UUID teacherId, @RequestParam String review) {
         TeacherReviewData newReview = new TeacherReviewData();
         newReview.setContent(review);
@@ -39,4 +34,5 @@ public class ReviewController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
 }

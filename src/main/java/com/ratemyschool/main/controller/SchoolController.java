@@ -32,10 +32,6 @@ public class SchoolController {
     public ResponseEntity<List<School>> findAll(Pageable pageable) {
         log.info("REST request for all school");
         return service.findAll(pageable).buildResponse();
-//        ResponseEntity<List<School>> response = ResponseEntity.ok(result.getContent());
-//        response.getHeaders().set("totalPages", result.getTotalPages().toString());
-//        response.getHeaders().set("totalElements", result.getTotalElements().toString());
-//        return response;
     }
 
     @PostMapping

@@ -8,6 +8,7 @@ import com.ratemyschool.main.dto.Teacher;
 import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.model.*;
 import com.ratemyschool.main.repo.TeacherRepository;
+import com.ratemyschool.main.repo.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +30,10 @@ import static com.ratemyschool.main.enums.RMSConstants.*;
 @Service
 @RequiredArgsConstructor
 public class TeacherService {
-
-    @Value("${deepl-api-secret-key}")
-    private String API_KEY;
-    private final String DEEPL_URL = "https://api-free.deepl.com/v2/translate";
     private final TeacherRepository teacherRepository;
+    private final TranslateService translateService;
+    private final SentimentService sentimentService;
+    private final TeacherReviewRepository teacherReviewRepository;
 
     public void addTeacher(TeacherData teacher) {
         teacher.setStatus(EntityStatus.ACTIVE);
@@ -48,7 +48,6 @@ public class TeacherService {
     public List<TeacherData> getTeachers(Pageable pageable) {
 
         return teacherRepository.findAllByStatusEquals(ACTIVE, pageable)
-                //.map(teacher -> modelMapper.map(teacher, TeacherDTO.class))
                 .toList();
     }
     public TeacherData getTeacherById(UUID id) {
@@ -60,99 +59,33 @@ public class TeacherService {
     }
 
     public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
-
         TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
-        ResponseEntity<DeeplResponse> deeplResponse = getDeeplApiCallResponse(review);
+        review.setTeacher(teacher);
+        ResponseEntity<DeeplResponse> deeplResponse = translateService.getDeeplApiCallResponse(review.getContent());
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
             review.setStatus(EntityStatus.PENDING);
-            teacher.addReview(review);
-            teacherRepository.save(teacher);
+            save(review);
             return AddReviewResponse.builder().status(TRANSLATION_FAILED).build();
         }
-        String reviewStatus = deeplResponse.getBody().getFullReviewInEnglish();
+        String reviewStatus = Objects.requireNonNull(deeplResponse.getBody()).getFullReviewInEnglish();
         review.setContentInEnglish(reviewStatus);
-        float score = calculateSentimentScore(reviewStatus);
+        float score = sentimentService.calculateSentimentScore(reviewStatus);
         review.setSentimentScore(score);
         if (score == Float.MIN_VALUE) {
             review.setStatus(EntityStatus.PENDING);
-            teacher.addReview(review);
-            teacherRepository.save(teacher);
+            save(review);
             return AddReviewResponse.builder().status(SENTIMENT_FAILED).build();
         }
-        byte stars = calculateStars(score);
+        byte stars = sentimentService.calculateStars(score);
         if (stars == -1) {
             return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
         }
         review.setStars(stars);
         review.setStatus(stars > 0 ? EntityStatus.ACTIVE : EntityStatus.PENDING);
-        teacher.addReview(review);
-        teacherRepository.save(teacher);
+        save(review);
         return stars > 0 ?
                 AddReviewResponse.builder().stars(stars).status(ACTIVE).build() :
                 AddReviewResponse.builder().status(PENDING).build();
-
-    }
-
-    float calculateSentimentScore(String reviewInEnglish) {
-        try (LanguageServiceClient language = LanguageServiceClient.create()) {
-            Document doc = Document.newBuilder().setContent(reviewInEnglish).setType(Document.Type.PLAIN_TEXT).build();
-            AnalyzeSentimentResponse response = language.analyzeSentiment(doc);
-            Sentiment sentiment = response.getDocumentSentiment();
-            return sentiment.getScore();
-        } catch (IOException e) {
-            return Float.MIN_VALUE;
-        }
-    }
-
-    ResponseEntity<DeeplResponse> getDeeplApiCallResponse(TeacherReviewData review) {
-        String urlTemplate = UriComponentsBuilder.fromHttpUrl(DEEPL_URL)
-                .queryParam("auth_key", API_KEY)
-                .toUriString();
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = buildHeaders();
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("target_lang", "EN-US");
-        map.add("text", review.getContent());
-        headers.setContentLength(map.size());
-        HttpEntity<MultiValueMap<String, String>> requestBody = new HttpEntity<>(map, headers);
-        restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        ResponseEntity<DeeplResponse> deeplResponse = restTemplate.exchange(urlTemplate, HttpMethod.POST, requestBody, DeeplResponse.class);
-        return deeplResponse;
-    }
-
-    byte calculateStars(float score) {
-        if(score < -0.8) {
-            return -1;
-        }
-        if(score < -0.6) {
-            return 0;
-        }
-        if(score <= -0.6) {
-            return 1;
-        }
-        if(score <= -0.2) {
-            return 2;
-        }
-        if(score <= 0.2) {
-            return 3;
-        }
-        if(score <= 0.6) {
-            return 4;
-        }
-        if(score <= 1) {
-            return 5;
-        }
-        return 0;
-    }
-
-    private HttpHeaders buildHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBasicAuth("DeepL Auth-Key " + API_KEY);
-        headers.setHost(InetSocketAddress.createUnresolved("api-free.deepl.com", 0));
-        headers.setAccept(Collections.singletonList(MediaType.ALL));
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-        return headers;
     }
 
     public void activateTeacherById(UUID teacherId, Boolean shouldActivate) {
@@ -160,6 +93,37 @@ public class TeacherService {
         teacher.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         teacherRepository.save(teacher);
 
+    }
+
+    private TeacherReviewData save(TeacherReviewData review) {
+        TeacherData teacher = teacherRepository.findById(review.getTeacher().getId())
+                .orElseThrow(() -> new RuntimeException("School not found."));
+        Long reviewCounter = teacherReviewRepository.countAllByTeacherIdAndStatus(teacher.getId(), EntityStatus.ACTIVE);
+        if (Objects.isNull(review.getId())) {
+            if (EntityStatus.ACTIVE.equals(review.getStatus())) {
+                teacher.setAvgRating((teacher.getAvgRating() * reviewCounter + review.getStars()) / reviewCounter + 1);
+                teacherRepository.save(teacher);
+                return teacherReviewRepository.save(review);
+            }
+            return teacherReviewRepository.save(review);
+        }
+        TeacherReviewData previous = teacherReviewRepository.findById(review.getId())
+                .orElseThrow(() -> new RuntimeException("Review not found."));
+        if (previous.getStatus().equals(review.getStatus())) {
+            return teacherReviewRepository.save(review);
+        }
+        if (EntityStatus.ACTIVE.equals(previous.getStatus())) {
+            if (reviewCounter > 1) {
+                teacher.setAvgRating((teacher.getAvgRating() * reviewCounter - review.getStars()) / reviewCounter - 1);
+            } else {
+                teacher.setAvgRating(0F);
+            }
+        }
+        if (EntityStatus.ACTIVE.equals(review.getStatus())) {
+            teacher.setAvgRating((teacher.getAvgRating() * reviewCounter + review.getStars()) / reviewCounter + 1);
+        }
+        teacherRepository.save(teacher);
+        return teacherReviewRepository.save(review);
     }
 
     public boolean doesTeacherExists(UUID teacherId) {

@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,8 +37,8 @@ public class UserData implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { //TODO encode roles to the jwt token
-        return isAdmin ? Collections.singletonList(new SimpleGrantedAuthority("ADMIN")) :
-                Collections.singletonList(new SimpleGrantedAuthority("MODERATOR")) ;
+        return isAdmin ? List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("MODERATOR"))
+                : Collections.singletonList(new SimpleGrantedAuthority("MODERATOR")) ;
     }
 
     @Override

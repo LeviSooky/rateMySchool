@@ -15,4 +15,5 @@ public class Teacher {
     private String name;
     private School school;
     private Boolean isMale;
+    private float avgRating;
 }
