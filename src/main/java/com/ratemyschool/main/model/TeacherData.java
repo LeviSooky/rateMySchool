@@ -67,7 +67,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
 
     private Boolean isMale;
 
-    private float avgRating;
+    private Float avgRating;
 
     public void addReview(TeacherReviewData review) {
         review.setTeacher(this);

@@ -13,11 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface TeacherRepository extends JpaRepository<TeacherData, UUID> {
-    Page<TeacherData> findAllByStatusEquals(char status, Pageable pageable);
+    //age<TeacherData> findAllByStatusEquals(char status, Pageable pageable);
     @EntityGraph(attributePaths = "school")
     Page<TeacherData> findAllBySchoolId(UUID schoolId, Pageable pageable);
     Optional<TeacherData> findByNameLikeAndSchoolNameLike(String name, String schoolName);
-    boolean existsByIdAndStatus(UUID teacherId, char status);
+    //boolean existsByIdAndStatus(UUID teacherId, char status);
 //    @Query("SELECT t.id, t.name, AVG(r.stars), COUNT(r.id), s.name\n" +
 //            "FROM teacher t\n" +
 //            "JOIN review r ON t.id = r.teacher_id\n" +
@@ -32,6 +32,10 @@ public interface TeacherRepository extends JpaRepository<TeacherData, UUID> {
     //TODO
     @Query("select td from TeacherData td where td.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE and lower(td.name) like lower(concat('%', :keyword, '%'))")
     Page<TeacherData> findAllActiveBy(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("select td from TeacherData td where lower(td.name) like lower(concat('%', :keyword, '%'))")
+    Page<TeacherData> findAllBy(@Param("keyword") String keyword, Pageable pageable);
+
 
     @Query("select td from TeacherData td where td.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE")
     Page<TeacherData> findAllActive(Pageable pageable);

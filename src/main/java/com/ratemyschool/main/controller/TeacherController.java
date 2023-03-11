@@ -1,8 +1,7 @@
 package com.ratemyschool.main.controller;
 
-import com.ratemyschool.main.dto.School;
 import com.ratemyschool.main.dto.Teacher;
-import com.ratemyschool.main.model.PageResult;
+import com.ratemyschool.main.exception.RmsRuntimeException;
 import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.service.TeacherService;
@@ -27,18 +26,18 @@ public class TeacherController {
 
     private final TeacherService teacherService;
     private final SchoolService schoolService;
-    @GetMapping(path = "/all")
-    public ResponseEntity<List<TeacherData>> getTeachers(
-        @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
-        @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
-        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
-
-        Sort.Direction direction = Sort.Direction.ASC.name().equals(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
-        List<TeacherData> teacherList = teacherService.getTeachers(paging);
-        return ResponseEntity.ok(teacherList);
-    }
+//    @GetMapping(path = "/all")
+//    public ResponseEntity<List<TeacherData>> getTeachers(
+//        @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
+//        @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
+//        @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
+//        @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") String sortDirection) {
+//
+//        Sort.Direction direction = Sort.Direction.ASC.name().equals(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
+//        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(direction, sort));
+//        List<TeacherData> teacherList = teacherService.getTeachers(paging);
+//        return ResponseEntity.ok(teacherList);
+//    }
 
     @GetMapping(path = "/search/{keyword}")
     public ResponseEntity<List<Teacher>> findAllBy(@PathVariable String keyword, Pageable pageable) {
@@ -72,7 +71,7 @@ public class TeacherController {
             teacherService.deleteTeacher(teacher);
             return ResponseEntity.ok(Boolean.TRUE);
         }
-         catch (RuntimeException e) {
+         catch (RmsRuntimeException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Teacher Not Found");
         }
@@ -95,7 +94,7 @@ public class TeacherController {
 
         try {
             schoolService.addTeacherToSchool(schoolId, teacher);
-        } catch (RuntimeException e) {
+        } catch (RmsRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "school does not exist");
         }
         return ResponseEntity.ok("success");

@@ -2,6 +2,7 @@ package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
+import com.ratemyschool.main.exception.RmsRuntimeException;
 import com.ratemyschool.main.model.PageResult;
 import com.ratemyschool.main.model.TeacherReviewData;
 import com.ratemyschool.main.repo.TeacherReviewRepository;
@@ -37,9 +38,9 @@ public class TeacherReviewService {
         return reviewRepository.findAllByStatusOrderByCreationDate(EntityStatus.PENDING);
     }
 
-    public void activateReviewById(UUID reviewId, Boolean isOk) {
-        TeacherReviewData review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
-        review.setStatus(isOk ? EntityStatus.ACTIVE : EntityStatus.DELETED);
+    public void activateReviewById(UUID reviewId, Boolean shouldActivate) {
+        TeacherReviewData review = reviewRepository.findById(reviewId).orElseThrow(RmsRuntimeException::new);
+        review.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         reviewRepository.save(review);
     }
 
@@ -57,5 +58,9 @@ public class TeacherReviewService {
 
     public PageResult<TeacherReviewData, TeacherReview> findAllActiveBy(UUID teacherId, Pageable pageable) {
         return new PageResult<>(reviewRepository.findAllActive(teacherId, pageable));
+    }
+
+    public PageResult<TeacherReviewData, TeacherReview> findAllBy(UUID teacherId, Pageable pageable) {
+        return new PageResult<>(reviewRepository.findAllByTeacherId(teacherId, pageable));
     }
 }

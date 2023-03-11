@@ -20,6 +20,11 @@ public interface SchoolReviewRepository extends JpaRepository<SchoolReviewData, 
     )
     Page<SchoolReviewData> findAllActiveBy(@Param("id") UUID id, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"school"})
-    Long countAllBySchoolIdAndStatus(UUID schoolId, EntityStatus status);
+    @Query("select srd from SchoolReviewData srd left join srd.school s where s.id = :id\n"
+    )
+    Page<SchoolReviewData> findAllBy(@Param("id") UUID id, Pageable pageable);
+
+    @Query("select count(sr) from SchoolReviewData sr left join sr.school s where s.id = :schoolId and sr.status = :status")
+    Long countAllBySchoolIdAndStatus(@Param("schoolId") UUID schoolId,
+                                     @Param("status") EntityStatus status); //TODO check for owner exception
 }

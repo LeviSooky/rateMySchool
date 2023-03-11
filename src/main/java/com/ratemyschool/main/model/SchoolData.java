@@ -64,6 +64,7 @@ public class SchoolData implements DomainRepresented<School> {
     @ToString.Exclude
     private List<SchoolReviewData> reviews = new ArrayList<>();
 
+    @Column(columnDefinition = "float4 default 0")
     private Float avgRating;
 
     public void addTeacher(TeacherData teacher) {

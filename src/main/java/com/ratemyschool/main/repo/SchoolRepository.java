@@ -18,4 +18,7 @@ public interface SchoolRepository extends JpaRepository<SchoolData, UUID> {
 
     @Query("select sd from SchoolData sd where sd.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE")
     Page<SchoolData> findAllActive(Pageable pageable);
+
+    @Query("select sd from SchoolData sd where lower(sd.name) like lower(concat('%', :keyword, '%'))\n")
+    Page<SchoolData> findAllBy(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -2,32 +2,27 @@ package com.ratemyschool.main.model;
 
 import com.ratemyschool.main.dto.SchoolReview;
 import com.ratemyschool.main.enums.EntityStatus;
-import lombok.Data;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "school_review")
+@Builder(toBuilder = true)
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class SchoolReviewData implements DomainRepresented<SchoolReview> {
 
     @Id
@@ -41,9 +36,9 @@ public class SchoolReviewData implements DomainRepresented<SchoolReview> {
     private String content;
     @Column(length = 2000)
     private String contentInEnglish;
-    private float sentimentScore;
+    private Float sentimentScore;
     private UUID deleteKey;
-    private byte stars;
+    private Integer stars;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EntityStatus status;
@@ -52,6 +47,7 @@ public class SchoolReviewData implements DomainRepresented<SchoolReview> {
     @LastModifiedDate
     private LocalDateTime lastModified;
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private SchoolData school;
 
 
@@ -64,5 +60,18 @@ public class SchoolReviewData implements DomainRepresented<SchoolReview> {
                 .creationDate(creationDate)
                 .status(status)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        SchoolReviewData that = (SchoolReviewData) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

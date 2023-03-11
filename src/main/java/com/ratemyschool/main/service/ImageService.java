@@ -1,5 +1,6 @@
 package com.ratemyschool.main.service;
 
+import com.ratemyschool.main.exception.RmsRuntimeException;
 import com.ratemyschool.main.model.ImageData;
 import com.ratemyschool.main.repo.ImageRepository;
 import com.ratemyschool.main.util.ImageUtil;
@@ -15,7 +16,7 @@ public class ImageService {
     private final ImageRepository repository;
     public byte[] findBy(UUID schoolId) {
         byte[] image = repository.findById(schoolId)
-                .orElseThrow(() -> new RuntimeException("Image not found."))
+                .orElseThrow(() -> new RmsRuntimeException("Image not found."))
                 .getImage();
         return ImageUtil.decompressImage(image);
     }

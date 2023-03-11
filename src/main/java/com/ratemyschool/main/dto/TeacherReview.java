@@ -14,5 +14,5 @@ public class TeacherReview {
     private UUID id;
     private String content;
     private LocalDateTime creationDate;
-    private byte stars;
+    private Integer stars;
 }

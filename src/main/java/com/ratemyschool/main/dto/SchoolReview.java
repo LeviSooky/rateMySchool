@@ -15,7 +15,7 @@ public class SchoolReview {
 
     private UUID id;
     private String content;
-    private byte stars;
+    private Integer stars;
     private LocalDateTime creationDate;
     private EntityStatus status;
 }

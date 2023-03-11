@@ -22,7 +22,7 @@ public class SentimentService {
         }
     }
 
-    public byte calculateStars(float score) {
+    public int calculateStars(float score) {
         if (score < -0.8) {
             return -1;
         }

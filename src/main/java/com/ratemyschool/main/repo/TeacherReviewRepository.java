@@ -17,14 +17,14 @@ import java.util.UUID;
 @Repository
 public interface TeacherReviewRepository extends JpaRepository<TeacherReviewData, UUID> {
 
-    Page<TeacherReviewData> findAllByTeacherId(UUID teacher_id, Pageable pageable);
     List<TeacherReviewData> findAllByStatusOrderByCreationDate(EntityStatus status);
     List<TeacherReviewData> findAllByStatusIn(List<EntityStatus> statuses);
     void deleteAllByLastModifiedBetweenAndStatus(LocalDateTime currentTime, LocalDateTime fromDate, EntityStatus status);
     @Query("select trd from TeacherReviewData trd where trd.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE and trd.teacher.id = :id")
     Page<TeacherReviewData> findAllActive(@Param("id") UUID id, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"school"})
-    Long countAllByTeacherIdAndStatus(UUID schoolId, EntityStatus status);
+    @EntityGraph(attributePaths = {"TeacherReviewData.teacher"})
+    Long countAllByTeacherIdAndStatus(UUID teacherId, EntityStatus status);
 
+    Page<TeacherReviewData> findAllByTeacherId(UUID teacherId, Pageable pageable);
 }

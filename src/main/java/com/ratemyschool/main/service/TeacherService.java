@@ -1,31 +1,22 @@
 package com.ratemyschool.main.service;
 
-import com.google.cloud.language.v1.AnalyzeSentimentResponse;
-import com.google.cloud.language.v1.Document;
-import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.cloud.language.v1.Sentiment;
 import com.ratemyschool.main.dto.Teacher;
 import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.model.*;
 import com.ratemyschool.main.repo.TeacherRepository;
 import com.ratemyschool.main.repo.TeacherReviewRepository;
+import com.ratemyschool.main.exception.RmsRuntimeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.*;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-import static com.ratemyschool.main.enums.RMSConstants.*;
+import static com.ratemyschool.main.enums.EntityStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,13 +36,8 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
-    public List<TeacherData> getTeachers(Pageable pageable) {
-
-        return teacherRepository.findAllByStatusEquals(ACTIVE, pageable)
-                .toList();
-    }
     public TeacherData getTeacherById(UUID id) {
-        return teacherRepository.findById(id).orElseThrow(RuntimeException::new);
+        return teacherRepository.findById(id).orElseThrow(RmsRuntimeException::new);
     }
 
     public List<TeacherData> getTeachersBySchoolId(UUID schoolId, Pageable pageable) {
@@ -59,7 +45,7 @@ public class TeacherService {
     }
 
     public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
-        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
+        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RmsRuntimeException::new);
         review.setTeacher(teacher);
         ResponseEntity<DeeplResponse> deeplResponse = translateService.getDeeplApiCallResponse(review.getContent());
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
@@ -76,7 +62,7 @@ public class TeacherService {
             save(review);
             return AddReviewResponse.builder().status(SENTIMENT_FAILED).build();
         }
-        byte stars = sentimentService.calculateStars(score);
+        int stars = sentimentService.calculateStars(score);
         if (stars == -1) {
             return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
         }
@@ -89,7 +75,7 @@ public class TeacherService {
     }
 
     public void activateTeacherById(UUID teacherId, Boolean shouldActivate) {
-        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RuntimeException::new);
+        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RmsRuntimeException::new);
         teacher.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         teacherRepository.save(teacher);
 
@@ -97,7 +83,7 @@ public class TeacherService {
 
     private TeacherReviewData save(TeacherReviewData review) {
         TeacherData teacher = teacherRepository.findById(review.getTeacher().getId())
-                .orElseThrow(() -> new RuntimeException("School not found."));
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
         Long reviewCounter = teacherReviewRepository.countAllByTeacherIdAndStatus(teacher.getId(), EntityStatus.ACTIVE);
         if (Objects.isNull(review.getId())) {
             if (EntityStatus.ACTIVE.equals(review.getStatus())) {
@@ -108,7 +94,7 @@ public class TeacherService {
             return teacherReviewRepository.save(review);
         }
         TeacherReviewData previous = teacherReviewRepository.findById(review.getId())
-                .orElseThrow(() -> new RuntimeException("Review not found."));
+                .orElseThrow(() -> new RmsRuntimeException("Review not found."));
         if (previous.getStatus().equals(review.getStatus())) {
             return teacherReviewRepository.save(review);
         }
@@ -126,9 +112,9 @@ public class TeacherService {
         return teacherReviewRepository.save(review);
     }
 
-    public boolean doesTeacherExists(UUID teacherId) {
-        return teacherRepository.existsByIdAndStatus(teacherId, ACTIVE);
-    }
+//    public boolean doesTeacherExists(UUID teacherId) {
+//       // return teacherRepository.existsByIdAndStatus(teacherId, ACTIVE);
+//    }
 
     public TeacherData update(TeacherData teacher) {
         return teacherRepository.saveAndFlush(teacher); // TODO
@@ -138,13 +124,21 @@ public class TeacherService {
         return new PageResult<>(teacherRepository.findAllActiveBy(keyword, pageable));
     }
 
+    public PageResult<TeacherData, Teacher> findAllBy(String keyword, Pageable pageable) {
+        return new PageResult<>(teacherRepository.findAllBy(keyword, pageable));
+    }
+
     public PageResult<TeacherData, Teacher> findAllActive(Pageable pageable) {
         return new PageResult<>(teacherRepository.findAllActive(pageable));
     }
 
+    public PageResult<TeacherData, Teacher> findAll(Pageable pageable) {
+        return new PageResult<>(teacherRepository.findAll(pageable));
+    }
+
     public Teacher findBy(UUID id) {
         return teacherRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("teacher not found."))
+                .orElseThrow(() -> new RmsRuntimeException("teacher not found."))
                 .toDomainModel();
     }
 }

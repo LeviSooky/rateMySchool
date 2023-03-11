@@ -33,7 +33,7 @@ public class TeacherReviewData implements DomainRepresented<TeacherReview> {
     private String contentInEnglish;
     private float sentimentScore;
     private UUID deleteKey;
-    private byte stars;
+    private Integer stars;
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
     @CreatedDate
