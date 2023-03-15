@@ -15,10 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,7 +23,8 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Log4j2
-@RestController("/moderator")
+@RestController
+@RequestMapping("moderator")
 public class ModeratorController {
     private final TeacherReviewService reviewService;
     private final TeacherService teacherService;
@@ -49,6 +47,18 @@ public class ModeratorController {
             );
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @GetMapping("/teachers/reviews/{teacherId}")
+    public ResponseEntity<List<TeacherReview>> findTeacherReviewsBy(@PathVariable UUID teacherId, Pageable pageable) {
+        log.debug("REST request for search teacher reviews by: {}", teacherId);
+        return reviewService.findAllBy(teacherId, pageable).buildResponse();
+    }
+
+    @GetMapping("/schools/reviews/{schoolId}")
+    public ResponseEntity<List<SchoolReview>> findSchoolReviewsBy(@PathVariable UUID schoolId, Pageable pageable) {
+        log.debug("REST request for search school reviews by: {}", schoolId);
+        return schoolReviewService.findAllBy(schoolId, pageable).buildResponse();
     }
 
     @GetMapping("/schools/reviews/moderate/{reviewId}")

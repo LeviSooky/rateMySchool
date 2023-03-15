@@ -20,10 +20,11 @@ public interface TeacherReviewRepository extends JpaRepository<TeacherReviewData
     List<TeacherReviewData> findAllByStatusOrderByCreationDate(EntityStatus status);
     List<TeacherReviewData> findAllByStatusIn(List<EntityStatus> statuses);
     void deleteAllByLastModifiedBetweenAndStatus(LocalDateTime currentTime, LocalDateTime fromDate, EntityStatus status);
-    @Query("select trd from TeacherReviewData trd where trd.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE and trd.teacher.id = :id")
+    @Query("select trd from TeacherReviewData trd left join trd.teacher td where trd.status = com.ratemyschool.main.enums.EntityStatus.ACTIVE and td.id = :id")
     Page<TeacherReviewData> findAllActive(@Param("id") UUID id, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"TeacherReviewData.teacher"})
+    @Query("select count(trd) from TeacherReviewData trd left join trd.teacher t where t.id = :teacherId and trd.status = :status")
+
     Long countAllByTeacherIdAndStatus(UUID teacherId, EntityStatus status);
 
     Page<TeacherReviewData> findAllByTeacherId(UUID teacherId, Pageable pageable);

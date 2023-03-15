@@ -59,7 +59,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
     private SchoolData school;
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private EntityStatus status; //TODO do everywhere and maybe add sex for ui generic logo
+    private EntityStatus status;
     @CreatedDate
     private LocalDateTime creationDate;
     @LastModifiedDate
@@ -67,6 +67,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
 
     private Boolean isMale;
 
+    @Column(columnDefinition = "float4 default 0")
     private Float avgRating;
 
     public void addReview(TeacherReviewData review) {

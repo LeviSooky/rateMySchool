@@ -3,35 +3,99 @@ package com.ratemyschool.main.service;
 import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.PageResult;
-import com.ratemyschool.main.model.TeacherReviewData;
+import com.ratemyschool.main.model.*;
+import com.ratemyschool.main.repo.TeacherRepository;
 import com.ratemyschool.main.repo.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+
+import static com.ratemyschool.main.enums.EntityStatus.ACTIVE;
+import static com.ratemyschool.main.enums.EntityStatus.NOT_ACCEPTABLE;
+import static com.ratemyschool.main.enums.EntityStatus.PENDING;
+import static com.ratemyschool.main.enums.EntityStatus.SENTIMENT_FAILED;
+import static com.ratemyschool.main.enums.EntityStatus.TRANSLATION_FAILED;
 
 @Service
 @RequiredArgsConstructor
 public class TeacherReviewService {
     private final TeacherReviewRepository reviewRepository;
+    private final TeacherRepository teacherRepository;
+    private final TranslateService translateService;
+    private final SentimentService sentimentService;
 
-    public void addReview(TeacherReviewData review) {
-//        TokenizerAnnotator tokenizerAnnotator = new TokenizerAnnotator("hu");
-//        Properties props = new Properties();
-//        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
-//        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-//        pipeline.addAnnotator(tokenizerAnnotator);
-//        CoreDocument coreDocument = pipeline.processToCoreDocument("Nagyon szép vagy ma drága barátom");
-//        Annotation document = new Annotation("Nagyon szép vagy ma drága barátom");
-//        pipeline.annotate(coreDocument);
-//        List<CoreSentence> sentences = coreDocument.sentences();
-//        sentences.forEach(System.out::println);
+    public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
+        TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RmsRuntimeException::new);
+        review.setTeacher(teacher);
+        ResponseEntity<DeeplResponse> deeplResponse = translateService.getDeeplApiCallResponse(review.getContent());
+        if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
+            review.setStatus(EntityStatus.PENDING);
+            review = save(review);
+            return AddReviewResponse.builder().id(review.getId()).status(TRANSLATION_FAILED).build();
+        }
+        String reviewStatus = Objects.requireNonNull(deeplResponse.getBody()).getFullReviewInEnglish();
+        review.setContentInEnglish(reviewStatus);
+        float score = sentimentService.calculateSentimentScore(reviewStatus);
+        review.setSentimentScore(score);
+        if (score == Float.MIN_VALUE) {
+            review.setStatus(EntityStatus.PENDING);
+            review = save(review);
+            return AddReviewResponse.builder().id(review.getId()).status(SENTIMENT_FAILED).build();
+        }
+        int stars = sentimentService.calculateStars(score);
+        if (stars == -1) {
+            return AddReviewResponse.builder().status(NOT_ACCEPTABLE).build();
+        }
+        review.setStars(stars);
+        review.setStatus(stars > 0 ? EntityStatus.ACTIVE : EntityStatus.PENDING);
+        review = save(review);
+        return stars > 0 ?
+                AddReviewResponse.builder().stars(stars).status(ACTIVE).id(review.getId()).build() :
+                AddReviewResponse.builder().status(PENDING).id(review.getId()).build();
+    }
 
-        //SentimentAnnotator sentimentAnnotator = new SentimentAnnotator(tokenizerAnnotator.toString(),null);
+    private TeacherReviewData save(TeacherReviewData review) {
+        TeacherData teacher = teacherRepository.findById(review.getTeacher().getId())
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
+        Long reviewCounter = reviewRepository.countAllByTeacherIdAndStatus(teacher.getId(), EntityStatus.ACTIVE);
+        if (Objects.isNull(review.getId())) {
+            if (EntityStatus.ACTIVE.equals(review.getStatus())) {
+                teacher.setAvgRating((teacher.getAvgRating() * reviewCounter + review.getStars()) / (reviewCounter + 1));
+                teacherRepository.save(teacher);
+                return reviewRepository.save(review);
+            }
+            return reviewRepository.save(review);
+        }
+        TeacherReviewData previous = reviewRepository.findById(review.getId())
+                .orElseThrow(() -> new RmsRuntimeException("Review not found."));
+        if (previous.getStatus().equals(review.getStatus())) {
+            if (!Objects.equals(review.getStars(), previous.getStars())) {
+                teacher.setAvgRating(
+                        (teacher.getAvgRating() * reviewCounter - (previous.getStars() - review.getStars()))
+                                / reviewCounter);
+                teacherRepository.save(teacher);
+            }
+            return reviewRepository.save(review);
+        }
+        if (EntityStatus.ACTIVE.equals(previous.getStatus())) {
+            if (reviewCounter > 1) {
+                teacher.setAvgRating((teacher.getAvgRating() * reviewCounter - review.getStars()) / (reviewCounter - 1));
+            } else {
+                teacher.setAvgRating(0F);
+            }
+        }
+        if (EntityStatus.ACTIVE.equals(review.getStatus())) {
+            teacher.setAvgRating((teacher.getAvgRating() * reviewCounter + review.getStars()) / (reviewCounter + 1));
+        }
+        teacherRepository.save(teacher);
+        return reviewRepository.save(review);
     }
 
     public List<TeacherReviewData> getPendingReviews() {
@@ -62,5 +126,12 @@ public class TeacherReviewService {
 
     public PageResult<TeacherReviewData, TeacherReview> findAllBy(UUID teacherId, Pageable pageable) {
         return new PageResult<>(reviewRepository.findAllByTeacherId(teacherId, pageable));
+    }
+
+    public void modifyStars(UUID reviewId, Integer stars) {
+        TeacherReviewData review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RmsRuntimeException("teacher review not found."));
+        TeacherReviewData toSave = review.toBuilder().stars(stars).build(); // very important because it uses the cached entity from the above line
+        save(toSave);
     }
 }

@@ -89,15 +89,22 @@ public class TeacherController {
         return ResponseEntity.ok(teachers);
     }
 
-    @PostMapping("/add/{schoolId}")
-    public ResponseEntity<String> addTeacher(@PathVariable UUID schoolId, @RequestBody TeacherData teacher) {
+//    @PostMapping("/add/{schoolId}")
+//    public ResponseEntity<String> addTeacher(@PathVariable UUID schoolId, @RequestBody TeacherData teacher) {
+//
+//        try {
+//            schoolService.addTeacherToSchool(schoolId, teacher);
+//        } catch (RmsRuntimeException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "school does not exist");
+//        }
+//        return ResponseEntity.ok("success");
+//    }
 
-        try {
-            schoolService.addTeacherToSchool(schoolId, teacher);
-        } catch (RmsRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "school does not exist");
-        }
-        return ResponseEntity.ok("success");
+    @PostMapping("/add/{schoolId}")
+    public ResponseEntity<Teacher> create(@RequestBody Teacher teacher, @PathVariable UUID schoolId) {
+        log.info("REST request to create teacher: {}", teacher);
+        Teacher saved = teacherService.save(teacher, schoolId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
 }

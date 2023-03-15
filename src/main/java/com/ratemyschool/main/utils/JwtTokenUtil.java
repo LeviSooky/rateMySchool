@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -24,11 +23,11 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(final UserData user) {
         return Jwts.builder()
-                .setSubject(user.getId().toString())
+                .setSubject(user.getEmail())
                 .setIssuer(JWTIssuer)
                 .setIssuedAt(new Date())
                 .claim("role", user.getAuthorities())
-                .setExpiration(createExpirationDate(1)) //TODO change back after testing
+                .setExpiration(createExpirationDate(5)) //TODO change back after testing
                 .signWith(SignatureAlgorithm.HS512, JWTSecret)
                 .compact();
     }

@@ -2,7 +2,10 @@ package com.ratemyschool.main.model;
 
 import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,8 +20,11 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "teacher_review")
+@Builder(toBuilder = true)
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeacherReviewData implements DomainRepresented<TeacherReview> {
     @Id
     @GeneratedValue(generator = "UUID")
