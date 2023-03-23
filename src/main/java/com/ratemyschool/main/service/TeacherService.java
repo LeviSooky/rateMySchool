@@ -90,4 +90,15 @@ public class TeacherService {
         toSave.setStatus(EntityStatus.PENDING);
         return teacherRepository.save(toSave).toDomainModel();
     }
+
+    public Teacher edit(Teacher teacher, UUID schoolId) {
+        TeacherData teacherData = teacherRepository.findById(teacher.getId())
+                .orElseThrow(() -> new RmsRuntimeException("teacher not found."));
+        SchoolData schoolData = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
+        teacherData.setSchool(schoolData);
+        teacherData.setName(teacher.getName());
+        teacherData.setIsMale(teacher.getIsMale());
+        return teacherRepository.save(teacherData).toDomainModel();
+    }
 }

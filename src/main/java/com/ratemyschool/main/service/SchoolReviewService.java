@@ -112,8 +112,9 @@ public class SchoolReviewService {
     public void moderate(UUID reviewId, Boolean shouldActivate) {
         SchoolReviewData review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RmsRuntimeException("school review not found."));
-        review.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
-        save(review);
+        SchoolReviewData toSave = review.toBuilder().status(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED)
+                .build();
+        save(toSave);
     }
 
     public void modifyStars(UUID reviewId, Integer stars) {

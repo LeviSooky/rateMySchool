@@ -77,6 +77,11 @@ public class TeacherController {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<Teacher> edit(@RequestBody Teacher teacher, @RequestParam UUID schoolId) {
+        return ResponseEntity.ok(teacherService.edit(teacher, schoolId));
+    }
+
     @GetMapping(path = "/bySchool/{schoolId}")
     public ResponseEntity<List<TeacherData>> getTeachersForSchoolBySchoolId(@PathVariable UUID schoolId,
                                                                             @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,

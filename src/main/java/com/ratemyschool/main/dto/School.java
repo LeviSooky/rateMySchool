@@ -1,5 +1,7 @@
 package com.ratemyschool.main.dto;
 
+import com.ratemyschool.main.enums.EntityStatus;
+import com.ratemyschool.main.model.CityData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +23,8 @@ public class School {
     private String websiteUrl;
 
     private Float avgRating;
+    private EntityStatus status;
+
+    private CityData city;
 
 }

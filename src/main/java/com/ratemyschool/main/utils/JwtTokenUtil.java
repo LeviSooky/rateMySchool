@@ -27,7 +27,7 @@ public class JwtTokenUtil {
                 .setIssuer(JWTIssuer)
                 .setIssuedAt(new Date())
                 .claim("role", user.getAuthorities())
-                .setExpiration(createExpirationDate(5)) //TODO change back after testing
+                .setExpiration(createExpirationDate(145))
                 .signWith(SignatureAlgorithm.HS512, JWTSecret)
                 .compact();
     }

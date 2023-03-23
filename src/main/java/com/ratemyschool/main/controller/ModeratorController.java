@@ -40,7 +40,7 @@ public class ModeratorController {
     @GetMapping("/teachers/reviews/moderate/{reviewId}")
     public ResponseEntity<Void> moderate(@PathVariable UUID reviewId, @RequestParam Boolean shouldActivate) {
         try {
-            reviewService.activateReviewById(reviewId, shouldActivate);
+            reviewService.moderateReview(reviewId, shouldActivate);
         } catch (RmsRuntimeException e) {
             throw  new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "review not found"
@@ -93,6 +93,12 @@ public class ModeratorController {
         return schoolReviewService.findAllBy(schoolId, pageable).buildResponse();
     }
 
+    @PutMapping("/schools")
+    public ResponseEntity<School> update(@RequestBody School school) {
+        log.info("REST request to update school: {}", school);
+        return ResponseEntity.ok(schoolService.create(school));
+    }
+
     @GetMapping(path = "/teachers/search/{keyword}")
     public ResponseEntity<List<Teacher>> findAllTeachersBy(@PathVariable String keyword, Pageable pageable) {
         log.info("REST request for teacher search by {}", keyword);
@@ -109,6 +115,12 @@ public class ModeratorController {
     public ResponseEntity<List<TeacherReview>> findAllActiveBy(@PathVariable UUID teacherId, Pageable pageable) {
         log.info("REST request for active teacher reviews by teacher id: {}", teacherId);
         return reviewService.findAllBy(teacherId, pageable).buildResponse();
+    }
+    @PutMapping("/teachers/edit/{schoolId}")
+    public ResponseEntity<Teacher> update(@RequestBody Teacher teacher, @PathVariable UUID schoolId) {
+        log.info("REST request to update teacher: {}", teacher);
+        Teacher edited = teacherService.edit(teacher, schoolId);
+        return ResponseEntity.ok(edited);
     }
 
 //    @PostMapping("teachers/update")

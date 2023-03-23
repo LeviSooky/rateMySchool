@@ -6,6 +6,7 @@ import com.ratemyschool.main.model.PageResult;
 import com.ratemyschool.main.exception.RmsRuntimeException;
 import com.ratemyschool.main.model.SchoolData;
 import com.ratemyschool.main.model.TeacherData;
+import com.ratemyschool.main.repo.CityDataRepository;
 import com.ratemyschool.main.repo.SchoolRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SchoolService {
     private final SchoolRepository repository;
+    private final CityDataRepository cityRepository;
 
     public void addTeacherToSchool(UUID schoolId, TeacherData teacher) {
         teacher.setStatus(EntityStatus.PENDING);
@@ -50,6 +52,10 @@ public class SchoolService {
         } else {
             schoolData = new SchoolData();
             schoolData.setStatus(EntityStatus.PENDING);
+            schoolData.setAvgRating(0f);
+        }
+        if (Objects.nonNull(school.getCity())) {
+            cityRepository.findById(school.getCity().getId()).orElseThrow(() -> new RmsRuntimeException("city not found"));
         }
         schoolData.create(school);
         return repository.save(schoolData).toDomainModel();

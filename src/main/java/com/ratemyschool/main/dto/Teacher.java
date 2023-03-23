@@ -1,5 +1,6 @@
 package com.ratemyschool.main.dto;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class Teacher {
     private School school;
     private Boolean isMale;
     private Float avgRating;
+    private EntityStatus status;
 }

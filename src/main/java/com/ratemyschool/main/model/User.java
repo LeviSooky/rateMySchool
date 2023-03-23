@@ -17,6 +17,8 @@ public class User {
     private UUID id;
     private String email;
     private boolean isAdmin;
+    private String lastName;
+    private String firstName;
     @JsonIgnore
     private String password;
 }

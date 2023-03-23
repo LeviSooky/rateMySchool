@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,5 +28,17 @@ public class AdminController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.deleteBy(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<Void> update(@RequestBody User user) {
+        userService.update(user);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<User>> findAll(@RequestParam(required = false) String keyword) {
+        List<User> all = userService.findAll(keyword);
+        return ResponseEntity.ok(all);
     }
 }

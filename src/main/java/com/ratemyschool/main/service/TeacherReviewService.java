@@ -102,10 +102,11 @@ public class TeacherReviewService {
         return reviewRepository.findAllByStatusOrderByCreationDate(EntityStatus.PENDING);
     }
 
-    public void activateReviewById(UUID reviewId, Boolean shouldActivate) {
-        TeacherReviewData review = reviewRepository.findById(reviewId).orElseThrow(RmsRuntimeException::new);
-        review.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
-        reviewRepository.save(review);
+    public void moderateReview(UUID reviewId, Boolean shouldActivate) {
+        TeacherReviewData review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new RmsRuntimeException("teacher review not found."));
+        TeacherReviewData toSave = review.toBuilder().status(shouldActivate ? ACTIVE : EntityStatus.DELETED).build();
+        reviewRepository.save(toSave);
     }
 
     public List<TeacherReviewData> getFailedReviews() {

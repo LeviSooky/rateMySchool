@@ -2,6 +2,7 @@ package com.ratemyschool.main.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +17,7 @@ import java.util.*;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-public class UserData implements UserDetails {
+public class UserData implements UserDetails, DomainRepresented<User> {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -28,6 +29,10 @@ public class UserData implements UserDetails {
     private String email;
     @Column(name = "password")
     private String password;
+    @Column
+    private String lastName;
+    @Column
+    private String firstName;
     @Column(name = "is_admin")
     private boolean isAdmin;
 
@@ -66,5 +71,16 @@ public class UserData implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public User toDomainModel() {
+        return User.builder()
+                .id(id)
+                .email(email)
+                .isAdmin(isAdmin)
+                .lastName(lastName)
+                .firstName(firstName)
+                .build();
     }
 }

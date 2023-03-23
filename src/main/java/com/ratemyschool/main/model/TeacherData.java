@@ -83,6 +83,7 @@ public class TeacherData implements DomainRepresented<Teacher> {
                 .isMale(isMale)
                 .avgRating(avgRating)
                 .school(school.toDomainModel())
+                .status(status)
                 .build();
     }
 

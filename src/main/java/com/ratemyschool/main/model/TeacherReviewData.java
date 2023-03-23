@@ -56,6 +56,7 @@ public class TeacherReviewData implements DomainRepresented<TeacherReview> {
                 .content(content)
                 .creationDate(creationDate)
                 .stars(stars)
+                .status(status)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.ratemyschool.main.dto;
 
+import com.ratemyschool.main.enums.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class TeacherReview {
     private String content;
     private LocalDateTime creationDate;
     private Integer stars;
+    private EntityStatus status;
 }

@@ -1,25 +1,21 @@
 package com.ratemyschool.main.model;
 
-import com.google.common.io.BaseEncoding;
 import com.ratemyschool.main.dto.School;
 import com.ratemyschool.main.enums.EntityStatus;
-import com.ratemyschool.main.util.ImageUtil;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -48,6 +44,9 @@ public class SchoolData implements DomainRepresented<School> {
 
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private CityData city;
 
     @OneToMany(
             orphanRemoval = true,
@@ -78,12 +77,15 @@ public class SchoolData implements DomainRepresented<School> {
                 .name(this.name)
                 .avgRating(avgRating)
                 .websiteUrl(this.websiteUrl)
+                .status(status)
+                .city(city)
                 .build();
     }
 
     public void create(School school) {
         this.name = school.getName();
         this.websiteUrl = school.getWebsiteUrl();
+        this.city = school.getCity();
     }
 
     @Override
