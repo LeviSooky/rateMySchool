@@ -1,8 +1,8 @@
 package com.ratemyschool.main.model;
 
+import com.ratemyschool.main.dto.User;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;

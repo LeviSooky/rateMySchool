@@ -59,7 +59,7 @@ public class TeacherReviewController {
         }
         if(result.getStatus() == EntityStatus.NOT_ACCEPTABLE) {
             return new ResponseEntity<>(result, HttpStatus.NOT_ACCEPTABLE);
-        } //TODO change
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

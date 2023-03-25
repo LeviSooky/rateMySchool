@@ -13,7 +13,6 @@ public class CityService {
 
     private final CityDataRepository repository;
 
-
     public List<CityData> findAllBy(String keyword) {
      return repository.findAllByNameContainingIgnoreCase(keyword);
     }

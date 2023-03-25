@@ -1,7 +1,7 @@
 package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.User;
+import com.ratemyschool.main.dto.User;
 import com.ratemyschool.main.model.UserData;
 import com.ratemyschool.main.repo.AppUserRepository;
 import lombok.RequiredArgsConstructor;

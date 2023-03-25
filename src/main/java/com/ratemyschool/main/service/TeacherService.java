@@ -3,13 +3,11 @@ package com.ratemyschool.main.service;
 import com.ratemyschool.main.dto.Teacher;
 import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.DomainRepresented;
 import com.ratemyschool.main.model.PageResult;
 import com.ratemyschool.main.model.SchoolData;
 import com.ratemyschool.main.model.TeacherData;
 import com.ratemyschool.main.repo.SchoolRepository;
 import com.ratemyschool.main.repo.TeacherRepository;
-import com.ratemyschool.main.repo.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TeacherService {
     private final TeacherRepository teacherRepository;
-    private final TeacherReviewRepository teacherReviewRepository;
     private final SchoolRepository schoolRepository;
 
     public void addTeacher(TeacherData teacher) {
@@ -48,10 +45,6 @@ public class TeacherService {
         teacher.setStatus(shouldActivate ? EntityStatus.ACTIVE : EntityStatus.DELETED);
         teacherRepository.save(teacher);
 
-    }
-
-    public TeacherData update(TeacherData teacher) {
-        return teacherRepository.saveAndFlush(teacher); // TODO
     }
 
     public PageResult<TeacherData, Teacher> findAllActiveBy(String keyword, Pageable pageable) {

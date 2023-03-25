@@ -123,16 +123,6 @@ public class ModeratorController {
         return ResponseEntity.ok(edited);
     }
 
-//    @PostMapping("teachers/update")
-//    public ResponseEntity<TeacherData> updateTeacher(@RequestBody TeacherData teacher) {
-//       if(teacherService.doesTeacherExists(teacher.getId())) {
-//           return ResponseEntity.ok(teacherService.update(teacher));
-//       }
-//        throw  new ResponseStatusException(
-//                HttpStatus.NOT_FOUND, "teacher not found"
-//        );
-//    }
-
     @GetMapping("/teachers/moderate/{teacherId}")
     public ResponseEntity<Void> moderateTeacher(@PathVariable UUID teacherId, @RequestParam Boolean shouldActivate) {
         try {

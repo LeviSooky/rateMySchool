@@ -37,7 +37,7 @@ public class SchoolController {
     @PostMapping
     public ResponseEntity<School> create(@RequestBody @Valid School school) {
         log.info("REST request to create school {}", school);
-        School saved = service.create(school); //TODO status handling
+        School saved = service.create(school);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
