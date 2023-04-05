@@ -1,6 +1,6 @@
 package com.ratemyschool.main.service;
 
-import com.ratemyschool.main.model.DeeplResponse;
+import com.ratemyschool.main.dto.DeeplResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

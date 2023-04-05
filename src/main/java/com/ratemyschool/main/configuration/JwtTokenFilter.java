@@ -1,7 +1,7 @@
 package com.ratemyschool.main.configuration;
 
-import com.ratemyschool.main.repo.AppUserRepository;
-import com.ratemyschool.main.utils.JwtTokenUtil;
+import com.ratemyschool.main.repository.AppUserRepository;
+import com.ratemyschool.main.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 
-import static com.ratemyschool.main.utils.JwtTokenUtil.BEARER_PREFIX;
+import static com.ratemyschool.main.util.JwtTokenUtil.BEARER_PREFIX;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 

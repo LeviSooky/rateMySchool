@@ -1,4 +1,4 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.dto;
 
 @FunctionalInterface
 public interface DomainRepresented<T> {

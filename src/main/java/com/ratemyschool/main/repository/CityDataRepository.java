@@ -1,6 +1,6 @@
-package com.ratemyschool.main.repo;
+package com.ratemyschool.main.repository;
 
-import com.ratemyschool.main.model.CityData;
+import com.ratemyschool.main.entity.CityData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

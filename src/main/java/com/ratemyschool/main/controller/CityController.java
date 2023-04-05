@@ -1,7 +1,7 @@
 package com.ratemyschool.main.controller;
 
 
-import com.ratemyschool.main.model.CityData;
+import com.ratemyschool.main.entity.CityData;
 import com.ratemyschool.main.service.CityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

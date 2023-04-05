@@ -1,6 +1,6 @@
-package com.ratemyschool.main.utils;
+package com.ratemyschool.main.util;
 
-import com.ratemyschool.main.model.UserData;
+import com.ratemyschool.main.entity.UserData;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

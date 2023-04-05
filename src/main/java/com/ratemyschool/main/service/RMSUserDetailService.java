@@ -1,6 +1,6 @@
 package com.ratemyschool.main.service;
 
-import com.ratemyschool.main.repo.AppUserRepository;
+import com.ratemyschool.main.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

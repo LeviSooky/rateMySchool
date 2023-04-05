@@ -1,6 +1,6 @@
-package com.ratemyschool.main.repo;
+package com.ratemyschool.main.repository;
 
-import com.ratemyschool.main.model.ImageData;
+import com.ratemyschool.main.entity.ImageData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

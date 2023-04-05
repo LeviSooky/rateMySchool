@@ -1,13 +1,10 @@
 package com.ratemyschool.main.configuration;
 
-import com.ratemyschool.main.model.UserData;
 import com.ratemyschool.main.service.TeacherService;
 import com.ratemyschool.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component

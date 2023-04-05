@@ -2,8 +2,8 @@ package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.exception.RmsRuntimeException;
 import com.ratemyschool.main.dto.User;
-import com.ratemyschool.main.model.UserData;
-import com.ratemyschool.main.repo.AppUserRepository;
+import com.ratemyschool.main.entity.UserData;
+import com.ratemyschool.main.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,12 +24,11 @@ public class UserService {
             throw new IllegalStateException("new user should not have id");
         }
         UserData userData = new UserData();
-        userData.setAdmin(user.isAdmin());
+        userData.setIsAdmin(user.getIsAdmin());
         userData.setPassword(passwordEncoder.encode(user.getPassword()));
         userData.setEmail(user.getEmail());
         userData.setLastName(user.getLastName());
         userData.setFirstName(user.getFirstName());
-        userData.setAdmin(user.isAdmin());
         userRepository.save(userData);
     }
 
@@ -55,7 +54,7 @@ public class UserService {
         userData.setEmail(user.getEmail());
         userData.setLastName(user.getLastName());
         userData.setFirstName(user.getFirstName());
-        userData.setAdmin(user.isAdmin());
+        userData.setIsAdmin(user.getIsAdmin());
         userRepository.save(userData);
     }
 }

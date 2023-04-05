@@ -1,9 +1,14 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.entity;
 
-import com.ratemyschool.main.dto.SchoolReview;
+import com.ratemyschool.main.dto.DomainRepresented;
+import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -11,20 +16,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
 @Entity
-@Table(name = "school_review")
+@Table(name = "teacher_review")
 @Builder(toBuilder = true)
-@AllArgsConstructor
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @EntityListeners(AuditingEntityListener.class)
-public class SchoolReviewData implements DomainRepresented<SchoolReview> {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class TeacherReviewData implements DomainRepresented<TeacherReview> {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -36,42 +38,26 @@ public class SchoolReviewData implements DomainRepresented<SchoolReview> {
     private String content;
     @Column(length = 2000)
     private String contentInEnglish;
-    private Float sentimentScore;
+    private float sentimentScore;
     private UUID deleteKey;
     private Integer stars;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private EntityStatus status;
     @CreatedDate
     private LocalDateTime creationDate;
     @LastModifiedDate
     private LocalDateTime lastModified;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private SchoolData school;
-
+    @ManyToOne
+    private TeacherData teacher;
 
     @Override
-    public SchoolReview toDomainModel() {
-        return SchoolReview.builder()
+    public TeacherReview toDomainModel() {
+        return TeacherReview.builder()
                 .id(id)
                 .content(content)
-                .stars(stars)
                 .creationDate(creationDate)
+                .stars(stars)
                 .status(status)
                 .build();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        SchoolReviewData that = (SchoolReviewData) o;
-        return id != null && Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }

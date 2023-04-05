@@ -1,8 +1,8 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.dto.LoginDTO;
-import com.ratemyschool.main.model.UserData;
-import com.ratemyschool.main.utils.JwtTokenUtil;
+import com.ratemyschool.main.entity.UserData;
+import com.ratemyschool.main.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

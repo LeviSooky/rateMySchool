@@ -1,7 +1,7 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.dto.Teacher;
-import com.ratemyschool.main.model.TeacherData;
+import com.ratemyschool.main.entity.TeacherData;
 import com.ratemyschool.main.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -5,7 +5,7 @@ import com.ratemyschool.main.dto.SchoolReview;
 import com.ratemyschool.main.dto.Teacher;
 import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.TeacherReviewData;
+import com.ratemyschool.main.entity.TeacherReviewData;
 import com.ratemyschool.main.service.SchoolReviewService;
 import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.service.TeacherReviewService;

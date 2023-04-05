@@ -6,7 +6,6 @@ import com.ratemyschool.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +22,13 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping("admin")
 public class AdminController {
 
     private final UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<Void> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<Void> createUser(@RequestBody @Valid User user) {
         userService.addUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -42,7 +40,7 @@ public class AdminController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<Void> update(@Valid @RequestBody User user) {
+    public ResponseEntity<Void> update(@RequestBody @Valid User user) {
         userService.update(user);
         return ResponseEntity.ok().build();
     }

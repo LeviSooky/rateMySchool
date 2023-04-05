@@ -2,12 +2,12 @@ package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.dto.School;
 import com.ratemyschool.main.enums.EntityStatus;
-import com.ratemyschool.main.model.PageResult;
+import com.ratemyschool.main.dto.PageResult;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.SchoolData;
-import com.ratemyschool.main.model.TeacherData;
-import com.ratemyschool.main.repo.CityDataRepository;
-import com.ratemyschool.main.repo.SchoolRepository;
+import com.ratemyschool.main.entity.SchoolData;
+import com.ratemyschool.main.entity.TeacherData;
+import com.ratemyschool.main.repository.CityDataRepository;
+import com.ratemyschool.main.repository.SchoolRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Pageable;

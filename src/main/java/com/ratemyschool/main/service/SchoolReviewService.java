@@ -2,19 +2,20 @@ package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.dto.SchoolReview;
 import com.ratemyschool.main.enums.EntityStatus;
-import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.PageResult;
-import com.ratemyschool.main.model.SchoolData;
-import com.ratemyschool.main.model.SchoolReviewData;
+import com.ratemyschool.main.dto.AddReviewResponse;
+import com.ratemyschool.main.dto.DeeplResponse;
+import com.ratemyschool.main.dto.PageResult;
+import com.ratemyschool.main.entity.SchoolData;
+import com.ratemyschool.main.entity.SchoolReviewData;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.repo.SchoolRepository;
-import com.ratemyschool.main.repo.SchoolReviewRepository;
+import com.ratemyschool.main.repository.SchoolRepository;
+import com.ratemyschool.main.repository.SchoolReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -42,6 +43,7 @@ public class SchoolReviewService {
         return new PageResult<>(reviewRepository.findAllBy(id, pageable));
     }
 
+    @Transactional
     public AddReviewResponse create(UUID schoolId, SchoolReviewData review) {
         SchoolData school = schoolRepository.findById(schoolId).orElseThrow(RmsRuntimeException::new);
         review.setSchool(school);

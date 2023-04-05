@@ -1,7 +1,7 @@
 package com.ratemyschool.main.service;
 
-import com.ratemyschool.main.model.CityData;
-import com.ratemyschool.main.repo.CityDataRepository;
+import com.ratemyschool.main.entity.CityData;
+import com.ratemyschool.main.repository.CityDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

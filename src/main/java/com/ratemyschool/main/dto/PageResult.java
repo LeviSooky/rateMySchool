@@ -1,4 +1,4 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.dto;
 
 import lombok.Value;
 import org.springframework.data.domain.Page;

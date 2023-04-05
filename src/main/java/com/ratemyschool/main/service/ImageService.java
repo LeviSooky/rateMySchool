@@ -1,8 +1,8 @@
 package com.ratemyschool.main.service;
 
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.ImageData;
-import com.ratemyschool.main.repo.ImageRepository;
+import com.ratemyschool.main.entity.ImageData;
+import com.ratemyschool.main.repository.ImageRepository;
 import com.ratemyschool.main.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

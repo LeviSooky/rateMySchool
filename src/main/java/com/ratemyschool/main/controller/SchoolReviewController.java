@@ -1,8 +1,8 @@
 package com.ratemyschool.main.controller;
 
 import com.ratemyschool.main.dto.SchoolReview;
-import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.SchoolReviewData;
+import com.ratemyschool.main.dto.AddReviewResponse;
+import com.ratemyschool.main.entity.SchoolReviewData;
 import com.ratemyschool.main.service.SchoolReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

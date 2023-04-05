@@ -1,4 +1,4 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.dto;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.dto;
 
 import com.ratemyschool.main.enums.EntityStatus;
 import lombok.Builder;

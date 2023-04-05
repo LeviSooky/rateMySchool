@@ -3,18 +3,19 @@ package com.ratemyschool.main.service;
 import com.ratemyschool.main.dto.TeacherReview;
 import com.ratemyschool.main.enums.EntityStatus;
 import com.ratemyschool.main.exception.RmsRuntimeException;
-import com.ratemyschool.main.model.AddReviewResponse;
-import com.ratemyschool.main.model.DeeplResponse;
-import com.ratemyschool.main.model.PageResult;
-import com.ratemyschool.main.model.TeacherData;
-import com.ratemyschool.main.model.TeacherReviewData;
-import com.ratemyschool.main.repo.TeacherRepository;
-import com.ratemyschool.main.repo.TeacherReviewRepository;
+import com.ratemyschool.main.dto.AddReviewResponse;
+import com.ratemyschool.main.dto.DeeplResponse;
+import com.ratemyschool.main.dto.PageResult;
+import com.ratemyschool.main.entity.TeacherData;
+import com.ratemyschool.main.entity.TeacherReviewData;
+import com.ratemyschool.main.repository.TeacherRepository;
+import com.ratemyschool.main.repository.TeacherReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +36,7 @@ public class TeacherReviewService {
     private final TranslateService translateService;
     private final SentimentService sentimentService;
 
+    @Transactional
     public AddReviewResponse addReview(UUID teacherId, TeacherReviewData review) {
         TeacherData teacher = teacherRepository.findById(teacherId).orElseThrow(RmsRuntimeException::new);
         review.setTeacher(teacher);

@@ -1,6 +1,6 @@
-package com.ratemyschool.main.repo;
+package com.ratemyschool.main.repository;
 
-import com.ratemyschool.main.model.UserData;
+import com.ratemyschool.main.entity.UserData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

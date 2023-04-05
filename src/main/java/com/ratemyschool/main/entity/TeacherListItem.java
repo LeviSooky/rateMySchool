@@ -1,4 +1,4 @@
-package com.ratemyschool.main.model;
+package com.ratemyschool.main.entity;
 
 import lombok.Builder;
 import lombok.Data;
