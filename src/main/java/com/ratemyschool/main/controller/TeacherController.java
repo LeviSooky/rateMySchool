@@ -45,7 +45,7 @@ public class TeacherController {
         teacherService.addTeacher(teacher);
     }
 
-    @PostMapping("/add/{schoolId}")
+    @PostMapping(path = "/add/{schoolId}")
     public ResponseEntity<Teacher> create(@RequestBody Teacher teacher, @PathVariable UUID schoolId) {
         log.info("REST request to create teacher: {}", teacher);
         Teacher saved = teacherService.save(teacher, schoolId);

@@ -47,7 +47,7 @@ public class TeacherReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<AddReviewResponse> addReview(@RequestParam UUID teacherId,
+    public ResponseEntity<AddReviewResponse> addReview(@RequestParam() UUID teacherId,
                                                        @NotBlank @Size(min = 10) @RequestParam String review) {
         TeacherReviewData newReview = new TeacherReviewData();
         newReview.setContent(review);

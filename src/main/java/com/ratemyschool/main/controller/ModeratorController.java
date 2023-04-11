@@ -37,7 +37,7 @@ public class ModeratorController {
         return ResponseEntity.ok(reviews);
     }
 
-    @GetMapping("/teachers/reviews/moderate/{reviewId}")
+    @PatchMapping("/teachers/reviews/moderate/{reviewId}")
     public ResponseEntity<Void> moderate(@PathVariable UUID reviewId, @RequestParam Boolean shouldActivate) {
         try {
             reviewService.moderateReview(reviewId, shouldActivate);
@@ -61,14 +61,14 @@ public class ModeratorController {
         return schoolReviewService.findAllBy(schoolId, pageable).buildResponse();
     }
 
-    @GetMapping("/schools/reviews/moderate/{reviewId}")
+    @PatchMapping("/schools/reviews/moderate/{reviewId}")
     public ResponseEntity<Void> moderateSchoolReview(@PathVariable UUID reviewId,
                                                      @RequestParam Boolean shouldActivate) {
         schoolReviewService.moderate(reviewId, shouldActivate);
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/schools/moderate/{schoolId}")
+    @PatchMapping("/schools/moderate/{schoolId}")
     public ResponseEntity<Void> moderateSchool(@PathVariable UUID schoolId,
                                                @RequestParam Boolean shouldActivate) {
         schoolService.moderate(schoolId, shouldActivate);
@@ -123,7 +123,7 @@ public class ModeratorController {
         return ResponseEntity.ok(edited);
     }
 
-    @GetMapping("/teachers/moderate/{teacherId}")
+    @PatchMapping("/teachers/moderate/{teacherId}")
     public ResponseEntity<Void> moderateTeacher(@PathVariable UUID teacherId, @RequestParam Boolean shouldActivate) {
         try {
             teacherService.activateTeacherById(teacherId, shouldActivate);

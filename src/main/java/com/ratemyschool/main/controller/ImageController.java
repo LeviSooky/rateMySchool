@@ -4,6 +4,7 @@ import com.ratemyschool.main.service.ImageService;
 import com.ratemyschool.main.service.SchoolService;
 import com.ratemyschool.main.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/image")
 @RequiredArgsConstructor
+@Log4j2
 public class ImageController {
 
     private final ImageService imageService;
@@ -40,6 +42,7 @@ public class ImageController {
 
     @GetMapping("/{schoolId}")
     public ResponseEntity<byte[]> findImageBy(@PathVariable UUID schoolId) {
+        log.info("REST request to find image by school id: {}", schoolId);
         byte[] image = imageService.findBy(schoolId);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);
     }

@@ -35,17 +35,22 @@ public class SchoolReviewService {
     private final TranslateService translateService;
     private final SentimentService sentimentService;
 
-    public PageResult<SchoolReviewData, SchoolReview> findAllActiveBy(UUID id, Pageable pageable) {
-        return new PageResult<>(reviewRepository.findAllActiveBy(id, pageable));
+    public PageResult<SchoolReviewData, SchoolReview> findAllActiveBy(UUID schoolId, Pageable pageable) {
+        schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
+        return new PageResult<>(reviewRepository.findAllActiveBy(schoolId, pageable));
     }
 
-    public PageResult<SchoolReviewData, SchoolReview> findAllBy(UUID id, Pageable pageable) {
-        return new PageResult<>(reviewRepository.findAllBy(id, pageable));
+    public PageResult<SchoolReviewData, SchoolReview> findAllBy(UUID schoolId, Pageable pageable) {
+        schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
+        return new PageResult<>(reviewRepository.findAllBy(schoolId, pageable));
     }
 
     @Transactional
     public AddReviewResponse create(UUID schoolId, SchoolReviewData review) {
-        SchoolData school = schoolRepository.findById(schoolId).orElseThrow(RmsRuntimeException::new);
+        SchoolData school = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new RmsRuntimeException("School not found."));
         review.setSchool(school);
         ResponseEntity<DeeplResponse> deeplResponse = translateService.getDeeplApiCallResponse(review.getContent());
         if (!deeplResponse.getStatusCode().equals(HttpStatus.OK)) {
