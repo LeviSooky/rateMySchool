@@ -108,6 +108,7 @@ public class TeacherReviewService {
         return reviewRepository.findAllByStatusOrderByCreationDate(EntityStatus.PENDING);
     }
 
+    @Transactional
     public void moderateReview(UUID reviewId, Boolean shouldActivate) {
         TeacherReviewData review = reviewRepository.findById(reviewId)
             .orElseThrow(() -> new RmsRuntimeException("teacher review not found."));
@@ -135,6 +136,7 @@ public class TeacherReviewService {
         return new PageResult<>(reviewRepository.findAllByTeacherId(teacherId, pageable));
     }
 
+    @Transactional
     public void modifyStars(UUID reviewId, Integer stars) {
         TeacherReviewData review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RmsRuntimeException("teacher review not found."));
