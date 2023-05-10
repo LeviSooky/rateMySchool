@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDateTime;
 
 @EnableAsync
-@RequiredArgsConstructor //TODO rethink
+@RequiredArgsConstructor
 public class ScheduledService {
     private final TeacherReviewService reviewService;
 

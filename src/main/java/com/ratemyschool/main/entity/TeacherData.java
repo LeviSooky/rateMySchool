@@ -98,6 +98,6 @@ public class TeacherData implements DomainRepresented<Teacher> {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode(); //TODO maybe change
+        return getClass().hashCode();
     }
 }

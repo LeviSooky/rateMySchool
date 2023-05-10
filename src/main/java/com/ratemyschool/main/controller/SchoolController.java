@@ -25,7 +25,8 @@ public class SchoolController {
     @GetMapping("/search/{keyword}")
     public ResponseEntity<List<School>> findAllBy(@PathVariable String keyword, Pageable pageable) {
         log.info("REST request for school search by: {}", keyword);
-        return service.findAllBy(keyword, pageable).buildResponse();
+        return service.findAllBy(keyword, pageable)
+                .buildResponse();
     }
 
     @GetMapping("/search")

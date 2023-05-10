@@ -25,5 +25,5 @@ public interface SchoolReviewRepository extends JpaRepository<SchoolReviewData, 
 
     @Query("select count(sr) from SchoolReviewData sr left join sr.school s where s.id = :schoolId and sr.status = :status")
     Long countAllBySchoolIdAndStatus(@Param("schoolId") UUID schoolId,
-                                     @Param("status") EntityStatus status); //TODO check for owner exception
+                                     @Param("status") EntityStatus status);
 }

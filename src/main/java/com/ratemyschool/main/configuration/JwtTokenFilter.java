@@ -50,7 +50,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .orElse(null);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 springUserDetails, null,
-                ofNullable(springUserDetails).map(UserDetails::getAuthorities).orElse(Collections.emptyList()));
+                ofNullable(springUserDetails)
+                        .map(UserDetails::getAuthorities)
+                        .orElse(Collections.emptyList()));
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
